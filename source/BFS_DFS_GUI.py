@@ -198,7 +198,7 @@ def input_start_handler(start_string):
                 
                 # Minus one because node label starts at 1 not zero(index)
                 start = temp_start
-                print ("Start:"), chr(start+65)
+                print ("Start:", chr(start+65))
                 setStart = True
                 break 
         if setStart == False:  
@@ -208,12 +208,12 @@ def input_start_handler(start_string):
         if start_string in current_node_letters_up:
             start = ord(start_string) - 65
             setStart = True
-            print ("Start:"), chr(start+65)
+            print ("Start:", chr(start+65))
         else:
             if start_string in current_node_letters_low:
                 start = ord(start_string) - 97
                 setStart = True
-                print ("Start:"), chr(start+65)
+                print ("Start:", chr(start+65))
             else:
                 print ("Warning: Unknown input. Enter a number or the node letter.")
 
