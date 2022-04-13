@@ -20,6 +20,3 @@ Enter a start and goal node, either by submitting a number or letter (any case i
 
 ###Contribution###
 Feel free to fork the project and apply changes on your own repo but please no pull request.
-
-### License and Copyright ###
-This package is Copyright (c) Ryan Gilera 2014 and is licensed under the MIT license. See [license](https://github.com/Daytron/graph-bfs-dfs-gui/blob/master/LICENSE) for more details.
