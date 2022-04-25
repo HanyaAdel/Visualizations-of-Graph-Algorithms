@@ -1,7 +1,4 @@
-
-
 ## Graph Node Search using BFS and DFS algorithms ##
-
 
 ### Description ###
 A Python GUI application to search for a node in a linked graph using breadth or depth first search with simpleguitk module. It allows the user to plot the graph on a canvas and link them together graphically. This was initially built using simplegui module for codeskulptor ([http://www.codeskulptor.org/](http://www.codeskulptor.org/)), but later moved to simpleguitk module.
