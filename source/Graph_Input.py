@@ -52,6 +52,7 @@ def LockNodes():
 
 
 
+
 def addEdge():
     printGraph()
     addEdgesBtn['state'] = DISABLED
@@ -92,7 +93,7 @@ def addEdge():
             if node.name == dest.get():
                 destNode = node
         
-        weight = weightInput.get("1.0",END)
+        weight = int (weightInput.get("1.0",END))
 
         temp = [destNode, weight]
         adj_list[srcNode].append (temp)
@@ -107,6 +108,8 @@ def addEdge():
 
     singleEdgeFrame.pack(side = LEFT)
 
+def lockEdges():
+    print("nodes locked")
 
 def printGraph():
     for node in adj_list:
@@ -130,10 +133,14 @@ addNodesLabel.pack()
 addNodesBtn= Button(nodesFrame, text="Click to add new node", command= addNode)
 addNodesBtn.pack(ipadx=10, ipady=10)
 
-LockNodesBtn= Button(nodesFrame, text="Click to Lock all Nodes", command= LockNodes)
+LockNodesBtn= Button(nodesFrame, text="Click to lock all nodes", command= LockNodes)
 LockNodesBtn.pack(ipadx=10, ipady=10)
 
 addEdgesBtn= Button(GraphInputPage, text="Click to add new edge", state = DISABLED, command= addEdge)
 addEdgesBtn.pack()
+
+LockEdgesBtn= Button(GraphInputPage, text="Click to lock all edges", command= lockEdges)
+LockEdgesBtn.pack()
+
 
 GraphInputPage.mainloop()
