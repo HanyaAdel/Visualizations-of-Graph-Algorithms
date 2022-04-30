@@ -14,9 +14,11 @@ var2 = tk.BooleanVar(root)
 var1 = tk.BooleanVar(root)
 
 def setDirectedOrNot():
+    global directed
     directed = var1.get()
 
 def setWeightedOrNot():
+    global weighted
     weighted = var2.get()
 
 def gotoGraphInput():
