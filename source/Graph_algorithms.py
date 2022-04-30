@@ -1,5 +1,5 @@
 import sys
-from Queue import PriorityQueue
+from queue import PriorityQueue
 
 
 class Algorithms:
