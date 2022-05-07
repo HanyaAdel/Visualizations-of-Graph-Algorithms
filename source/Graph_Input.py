@@ -121,19 +121,6 @@ def lockEdges():
     submitStartAndEndBtn.pack()
 
     startAndGoalFrame.pack(side = BOTTOM)
-        # ---------- Will use this in entering heuristics -------------------
-    # heurLabel = Label(singleNodeFrame, text = "Enter Node Heuristic")
-    # heurInput = Text(singleNodeFrame, height = 1, width = 4)  
-    # heurLabel.pack()
-    # heurInput.pack()  
-
-    # def submitNode():
-    #     addNodesBtn['state'] = NORMAL
-    #     submitNodeBtn['state'] = DISABLED
-    
-    # submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
-    # submitNodeBtn.pack()
-
 def printGraph():
 
     for node in adj_list:
