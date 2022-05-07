@@ -1,46 +1,39 @@
-from asyncio.windows_events import NULL
 from tkinter import *
 from Main_Page import directed, weighted
 from collections import defaultdict
 
+currNum = 1
 
-nodes = [] # list of Node objects
-currLetter = "A"
-
+nodeValues = []
 adj_list = defaultdict(list)
 
-
-class Node:
-    def __init__(self, name : str, heur : int) :
-        self.name = name
-        self.heur = heur
-
+START_NODE = 0
+GOAL_NODE = 0
 
 def addNode():
 
-    addNodesBtn['state'] = DISABLED
-    singleNodeFrame = Frame(nodesFrame, width = 70, height=120)
-    global currLetter
-    CurrNodeLabel = Label(singleNodeFrame, text = currLetter)
+    singleNodeFrame = Frame(nodesFrame, width = 70, height=70)
+    global currNum
+    CurrNodeLabel = Label(singleNodeFrame, text = currNum)
     CurrNodeLabel.pack()
 
-    heurLabel = Label(singleNodeFrame, text = "Enter Node Heuristic")
-    heurInput = Text(singleNodeFrame, height = 1, width = 4)  
-    heurLabel.pack()
-    heurInput.pack()  
+    nodeValues.append(currNum)
 
-    def submitNode():
-        addNodesBtn['state'] = NORMAL
-        submitNodeBtn['state'] = DISABLED
-        heurInput.config(state = DISABLED)
+    currNum = currNum+1 
+    
 
-        global currLetter
-        nodes.append(Node(currLetter, heurInput.get("1.0",END)))
-        currLetter = chr(ord(currLetter)+1) 
-        
-        
-    submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
-    submitNodeBtn.pack()
+    # ---------- Will use this in entering heuristics -------------------
+    # heurLabel = Label(singleNodeFrame, text = "Enter Node Heuristic")
+    # heurInput = Text(singleNodeFrame, height = 1, width = 4)  
+    # heurLabel.pack()
+    # heurInput.pack()  
+
+    # def submitNode():
+    #     addNodesBtn['state'] = NORMAL
+    #     submitNodeBtn['state'] = DISABLED
+    
+    # submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
+    # submitNodeBtn.pack()
 
     singleNodeFrame.pack(side = LEFT)
 
@@ -54,19 +47,13 @@ def LockNodes():
 
 
 def addEdge():
-    printGraph()
     addEdgesBtn['state'] = DISABLED
 
     singleEdgeFrame = Frame(GraphInputPage, width=100, height=170)  
-
-    nodeValues = []
-    for node in nodes:
-        nodeValues.append(node.name)
     
-
     src = StringVar()
     src.set( "Select Source" )
-    srcDrop = OptionMenu( singleEdgeFrame , src , *nodeValues )
+    srcDrop = OptionMenu( singleEdgeFrame , src , *nodeValues)
     srcDrop.pack() 
 
     dest = StringVar() 
@@ -83,17 +70,16 @@ def addEdge():
     def submitEdge():
         addEdgesBtn["state"] = NORMAL
         submitEdgeBtn['state'] = DISABLED
+        LockEdgesBtn["state"] = NORMAL
         weightInput.config(state = DISABLED)
 
-        srcNode, destNode = NULL, NULL
-
-        for node in nodes:
-            if node.name == src.get():
-                srcNode = node
-            if node.name == dest.get():
-                destNode = node
+        srcNode, destNode = src.get(), dest.get()
         
-        weight = int (weightInput.get("1.0",END))
+        weight = 0
+
+        if weighted:
+            weight = int (weightInput.get("1.0",END))
+
 
         temp = [destNode, weight]
         adj_list[srcNode].append (temp)
@@ -101,7 +87,7 @@ def addEdge():
         if directed == FALSE: 
             temp = [srcNode, weight]
             adj_list[destNode].append (temp)
-        
+
 
     submitEdgeBtn = Button(singleEdgeFrame, text = "Submit Edge", command = submitEdge)
     submitEdgeBtn.pack()
@@ -109,12 +95,50 @@ def addEdge():
     singleEdgeFrame.pack(side = LEFT)
 
 def lockEdges():
-    print("nodes locked")
+    printGraph()
+
+    start = StringVar()
+    goal = StringVar()
+
+    start.set("Select Start Node")
+    goal.set("Select Goal Node")
+    startAndGoalFrame = Frame(GraphInputPage, width=30, height=30)
+    startNodeDrop = OptionMenu(startAndGoalFrame, start, *nodeValues)
+    goalNodeDrop = OptionMenu(startAndGoalFrame, goal, *nodeValues)
+
+    startNodeDrop.pack()
+    goalNodeDrop.pack()
+
+
+
+    def submitStartAndEnd():
+        global START_NODE
+        global GOAL_NODE
+        START_NODE = start.get()
+        GOAL_NODE = goal.get()
+
+    submitStartAndEndBtn = Button(startAndGoalFrame, text = "Submit Start and Goal Node", command = submitStartAndEnd)
+    submitStartAndEndBtn.pack()
+
+    startAndGoalFrame.pack(side = BOTTOM)
+        # ---------- Will use this in entering heuristics -------------------
+    # heurLabel = Label(singleNodeFrame, text = "Enter Node Heuristic")
+    # heurInput = Text(singleNodeFrame, height = 1, width = 4)  
+    # heurLabel.pack()
+    # heurInput.pack()  
+
+    # def submitNode():
+    #     addNodesBtn['state'] = NORMAL
+    #     submitNodeBtn['state'] = DISABLED
+    
+    # submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
+    # submitNodeBtn.pack()
 
 def printGraph():
+
     for node in adj_list:
         for edges in adj_list[node]:
-            print(node.name, "-->", edges[0].name, edges[1])
+            print(node, "-->", edges[0], edges[1])
 
 
 
@@ -139,7 +163,7 @@ LockNodesBtn.pack(ipadx=10, ipady=10)
 addEdgesBtn= Button(GraphInputPage, text="Click to add new edge", state = DISABLED, command= addEdge)
 addEdgesBtn.pack()
 
-LockEdgesBtn= Button(GraphInputPage, text="Click to lock all edges", command= lockEdges)
+LockEdgesBtn= Button(GraphInputPage, text="Click to lock all edges",  state = DISABLED, command= lockEdges)
 LockEdgesBtn.pack()
 
 
