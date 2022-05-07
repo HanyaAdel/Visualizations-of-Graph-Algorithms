@@ -127,7 +127,8 @@ def printGraph():
         for edges in adj_list[node]:
             print(node, "-->", edges[0], edges[1])
 
-
+def testAlgo():
+        print("testing algorithm")
 
 
 GraphInputPage = Tk()
@@ -153,5 +154,7 @@ addEdgesBtn.pack()
 LockEdgesBtn= Button(GraphInputPage, text="Click to lock all edges",  state = DISABLED, command= lockEdges)
 LockEdgesBtn.pack()
 
+testAlgo= Button(GraphInputPage, text="Test Algorithm",  state = NORMAL, command= testAlgo)
+testAlgo.pack()
 
 GraphInputPage.mainloop()
