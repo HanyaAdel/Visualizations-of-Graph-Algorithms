@@ -4,7 +4,7 @@ from Main_Page import directed, weighted
 from collections import defaultdict
 
 
-nodes = []
+nodes = [] # list of Node objects
 currLetter = "A"
 
 adj_list = defaultdict(list)
