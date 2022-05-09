@@ -22,11 +22,7 @@ GOAL_NODE = 0
 
 def addNode():
 
-    singleNodeFrame = Frame(nodesFrame, width = 70, height=70)
     global currNum
-    CurrNodeLabel = Label(singleNodeFrame, text = currNum)
-    CurrNodeLabel.pack()
-
     nodeValues.append(currNum)
     tempNode = Node(currNum, 1)
     nodes.append(tempNode)
@@ -48,8 +44,6 @@ def addNode():
     # submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
     # submitNodeBtn.pack()
 
-    singleNodeFrame.pack(side = LEFT)
-
 
 def LockNodes():
     addEdgesBtn['state'] = NORMAL
@@ -58,9 +52,11 @@ def LockNodes():
 
 
 def addEdge():
-    addEdgesBtn['state'] = DISABLED
+    for widgets in singleEdgeFrame.winfo_children():
+      widgets.destroy()
 
-    singleEdgeFrame = Frame(GraphInputPage, width=100, height=170)  
+    addEdgesBtn['state'] = DISABLED
+    LockEdgesBtn["state"] = DISABLED
     
     src = StringVar()
     src.set( "Select Source" )
@@ -105,7 +101,7 @@ def addEdge():
     submitEdgeBtn = Button(singleEdgeFrame, text = "Submit Edge", command = submitEdge)
     submitEdgeBtn.pack()
 
-    singleEdgeFrame.pack(side = LEFT)
+    singleEdgeFrame.pack()
 
 def lockEdges():
     printGraph()
@@ -214,19 +210,23 @@ def update():
 
 
 GraphInputPage = Tk()
-GraphInputPage.geometry('700x550')
+GraphInputPage.geometry('900x800')
 GraphInputPage.title('Graph Input')
 fig = plt.figure()
 canvas = FigureCanvasTkAgg(fig, GraphInputPage)
 canvas.draw()
-canvas.get_tk_widget().pack()
+canvas.get_tk_widget().pack(side=RIGHT, fill=Y)
 
-nodesFrame = Frame(GraphInputPage, width=550, height=200)
+nodesAndEdgesFrame =  Frame(GraphInputPage, highlightbackground="blue", highlightthickness=2, width=250, height=600)
+nodesAndEdgesFrame.pack(side=LEFT)
+nodesAndEdgesFrame.pack_propagate(0)
+
+nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="red", highlightthickness=2,width=250, height=300)
 nodesFrame.pack()
 nodesFrame.pack_propagate(0)
 
 addNodesLabel = Label (nodesFrame, text = "Adding Nodes")
-addNodesLabel.pack()
+addNodesLabel.pack(ipady=20)
 
 addNodesBtn= Button(nodesFrame, text="Click to add new node", command= addNode)
 addNodesBtn.pack(ipadx=10, ipady=10)
@@ -234,13 +234,23 @@ addNodesBtn.pack(ipadx=10, ipady=10)
 LockNodesBtn= Button(nodesFrame, text="Click to lock all nodes", command= LockNodes)
 LockNodesBtn.pack(ipadx=10, ipady=10)
 
-addEdgesBtn= Button(GraphInputPage, text="Click to add new edge", state = DISABLED, command= addEdge)
+edgesFrame = Frame(nodesAndEdgesFrame, width=250, height=400)
+edgesFrame.pack()
+edgesFrame.pack_propagate(0)
+
+singleEdgeFrame = Frame(edgesFrame, width=250, height=200)
+
+addEdgesBtn= Button(edgesFrame, text="Click to add new edge", state = DISABLED, command= addEdge)
 addEdgesBtn.pack()
 
-LockEdgesBtn= Button(GraphInputPage, text="Click to lock all edges",  state = DISABLED, command= lockEdges)
+LockEdgesBtn= Button(edgesFrame, text="Click to lock all edges",  state = DISABLED, command= lockEdges)
 LockEdgesBtn.pack()
 
-testAlgo= Button(GraphInputPage, text="Test Algorithm",  state = NORMAL, command= testAlgo)
+algoFrame = Frame(nodesAndEdgesFrame, width=250, height=200)
+algoFrame.pack()
+algoFrame.pack_propagate(0)
+
+testAlgo= Button(algoFrame, text="Test Algorithm",  state = NORMAL, command= testAlgo)
 testAlgo.pack()
 
 GraphInputPage.mainloop()
