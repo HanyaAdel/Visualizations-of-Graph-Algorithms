@@ -10,7 +10,7 @@ class Node:
         self.heuristic = heuristic
 
     @staticmethod
-    def get_node(name):
+    def get_node(name: int):
         for node in nodes:
             if node.name == name:
                 return node
