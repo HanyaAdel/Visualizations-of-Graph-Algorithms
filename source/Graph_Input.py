@@ -20,6 +20,8 @@ nodeValues = []
 START_NODE = 0
 GOAL_NODE = 0
 
+alg = Algorithms()
+
 def addNode():
 
     global currNum
@@ -136,16 +138,22 @@ def printGraph():
         for edges in adj_list[node]:
             print(node, "-->", edges[0], edges[1])
 
-def testAlgo():
-        alg = Algorithms()
-        alg.iterative_deepening(START_NODE,GOAL_NODE,sys.maxsize)
-        animate_solution(alg.get_visited_path(),alg.get_path())
+def run_DFS():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.dfs(START_NODE, GOAL_NODE)
+    # animate_solution(alg.get_visited_path())
+
+
+def run_ID():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.iterative_deepening(START_NODE, GOAL_NODE, sys.maxsize)
+    # animate_solution(alg.get_visited_path())
 
 
 G = nx.DiGraph()
 
 path = []
-sol = []
+visited_ID = []  # iterative deepening visited lists
 color_map = []
 i = int(-1)
 ani = None
@@ -165,29 +173,61 @@ def animate(frame):
     global G
     global color_map
     global path
-    global sol
-    # G = G.to_undirected()             # consider this for changing the graph from directed to undirected
+    # G = G.to_undirected()             # consider this for changing the graph from directed to undirected Todo
 
     color_map = list(nx.get_node_attributes(G, "color").values())
     fig.clear()
-    if i >= len(path):
-        for node in sol:
-            color_map[int(node)] = "yellow"
-    else:
-        color_map[int(path[i])] = "red"
+    color_map[int(path[i])] = "red"
     i += 1
     draw()
 
 
-def animate_solution(visited_path, solution_path):
+def animate_solution(visited_path = alg.get_visited_path()):
     global path
-    global sol
     global i
     i = int(-1)
     path = visited_path
-    sol = solution_path
     # nx.draw_networkx(G, pos=positions, with_labels=True)
-    ani = animation.FuncAnimation(fig, animate, frames=len(path) + 1, interval=700, repeat=False)
+    ani = animation.FuncAnimation(fig, animate, frames=len(path), interval=700, repeat=False)
+    update()
+
+
+def show_solution_path(solution_path=alg.get_path()):
+    global color_map
+    color_map = list(nx.get_node_attributes(G, "color").values())     # consider making this a reset_color_map func Todo
+    for node in solution_path:
+        color_map[int(node)] = "yellow"
+    draw()
+    canvas.draw()  # check if you need this
+
+
+def show_visited(visited=alg.get_visited()):
+    global color_map
+    color_map = list(nx.get_node_attributes(G, "color").values())
+    for node in visited:
+        color_map[int(node)] = "green"
+    draw()
+    canvas.draw()
+
+
+def animate_visited(frame):
+    global i
+    global visited_ID
+    global color_map
+    color_map = list(nx.get_node_attributes(G, "color").values())
+    fig.clear()
+    for node in visited_ID[i]:
+        color_map[int(node)] = "green"
+    i += 1
+    draw()
+
+
+def show_visited_ID(visited=alg.get_visited_ID()):  # show visited for iterative improvement
+    global visited_ID
+    global i
+    visited_ID = visited
+    i = int(-1)
+    ani = animation.FuncAnimation(fig, animate_visited, frames=len(visited), interval=700, repeat=False)
     update()
 
 
@@ -197,7 +237,8 @@ def add_node(node_name, heuristic):
 
 
 def add_edge(source, destination, weight):
-    G.add_edge(source, destination, w=weight)    # w instead of weight to avoid graphvis dot layout from changing edge lengths
+    G.add_edge(source, destination,
+               w=weight)  # w instead of weight to avoid graphvis dot layout from changing edge lengths
     update()
 
 
@@ -250,7 +291,40 @@ algoFrame = Frame(nodesAndEdgesFrame, width=250, height=200)
 algoFrame.pack()
 algoFrame.pack_propagate(0)
 
-testAlgo= Button(algoFrame, text="Test Algorithm",  state = NORMAL, command= testAlgo)
+testAlgo = Button(GraphInputPage, text="Test Algorithm ID", state=NORMAL, command=run_ID)
+testAlgo.pack()
+
+testAlgo = Button(GraphInputPage, text="Test Algorithm DFS", state=NORMAL, command=run_DFS)
+testAlgo.pack()
+
+testAlgo = Button(GraphInputPage, text="Show Path", state=NORMAL, command=show_solution_path)
+testAlgo.pack()
+
+testAlgo = Button(GraphInputPage, text="Show Visited", state=NORMAL, command=show_visited)
+testAlgo.pack()
+
+testAlgo = Button(GraphInputPage, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
+testAlgo.pack()
+
+testAlgo = Button(GraphInputPage, text="Animate Solution", state=NORMAL, command=animate_solution)
 testAlgo.pack()
 
 GraphInputPage.mainloop()
+
+# Todo
+# I can't see the test algo button (I changed it to be in the main frame for now)
+# can there be no path from source to destination node (source node is a leaf node in a directed graph)
+# can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
+# the select source/goal for the algorithm can be just disabled (there is currently a bug where whenever you click on lock edges a new instance of those is created)
+# there is no need for the lock nodes/edges buttons
+# there will be a button for only showing the visited nodes for iterative deepening (this one is different from the one used in the other algorithms)
+# increase graph canvas area
+# when the window is minimized some buttons (the ones responsible for the source/goal nodes) are partially hidden by the canvas
+# fix the multiple windows bug
+# there is no need for the add edge button you can just reset the two lists when you hit submit edge
+# should we show the algorithm animation by default or have a button for it
+# we can probably add nodes and edges simultaneously
+# should we include all the algorithms in one class?
+# add reset graph button
+# add back button for changing the graph type (directed, undirected, weighted, unweighted)
+

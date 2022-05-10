@@ -5,6 +5,7 @@ from Graph import Node, nodes, adj_list
 class Algorithms:
     found = False
     visited_return = []     # visited list to be returned
+    visited_return_ID = []  # visited list to be returned for iterative deepening algorithm
     visited_flag = {}       # to avoid duplicates in visited_return (also consider using ordered sets to eliminate this)
     visited = {}            # visited list to prevent infinite loops
     visited_path = []       # list to be used for illustrating the algorithm path on the graph
@@ -17,20 +18,31 @@ class Algorithms:
         self.clear_visited_return()
         self.reset_iterative_deepening()
         self.visited_path.clear()
+        self.visited_return_ID.clear()
 
     def clear_visited_return(self):
         self.visited_return.clear()
+        self.reset_visited_flag()
+
+    def reset_visited_flag(self):
         for node in nodes:
             self.visited_flag[node] = False
+
+    def reset_visited(self):
+        for node in nodes:
+            self.visited[node] = False
 
     def reset_iterative_deepening(self):
         self.path.clear()
         self.found = False
-        for node in nodes:
-            self.visited[node] = False
+        self.reset_visited()
+        self.clear_visited_return()
 
     def get_visited(self):
         return self.visited_return
+
+    def get_visited_ID(self):                   # get visited lists for Iterative Deepening
+        return self.visited_return_ID
 
     def get_path(self):
         return self.path
@@ -69,5 +81,7 @@ class Algorithms:
         for depth in range(max_depth):
             self.reset_iterative_deepening()
             self.depth_limited(source, goal, depth)
+            visited = self.visited_return.copy()
+            self.visited_return_ID.append(visited)
             if self.found:
                 return
