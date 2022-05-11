@@ -1,5 +1,6 @@
 import sys
 from tkinter import *
+from tkinter.ttk import Combobox
 from Main_Page import directed, weighted
 from collections import defaultdict
 import networkx as nx
@@ -31,8 +32,8 @@ def addNode():
     add_node(tempNode.name, tempNode.heuristic)
 
     currNum = currNum+1 
-    
 
+    updateComboBoxes()
     # ---------- Will use this in entering heuristics -------------------
     # heurLabel = Label(singleNodeFrame, text = "Enter Node Heuristic")
     # heurInput = Text(singleNodeFrame, height = 1, width = 4)  
@@ -46,80 +47,42 @@ def addNode():
     # submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
     # submitNodeBtn.pack()
 
+def updateComboBoxes():
+    src.set( "Select Source" )
 
-def LockNodes():
-    addEdgesBtn['state'] = NORMAL
-    addNodesBtn["state"] = DISABLED
-    LockNodesBtn['state'] = DISABLED
+    dest.set("Select Destination")
+    srcDrop['values'] = nodeValues
+    destDrop['values'] = nodeValues
+
+    startNodeDrop['values'] = nodeValues
+    goalNodeDrop['values'] = nodeValues
+
+    weightInput.delete('1.0', END)
+
 
 
 def addEdge():
-    for widgets in singleEdgeFrame.winfo_children():
-      widgets.destroy()
 
-    addEdgesBtn['state'] = DISABLED
-    LockEdgesBtn["state"] = DISABLED
-    
-    src = StringVar()
-    src.set( "Select Source" )
-    srcDrop = OptionMenu( singleEdgeFrame , src , *nodeValues)
-    srcDrop.pack() 
-
-    dest = StringVar() 
-    dest.set( "Select Destination" )
-    destDrop = OptionMenu( singleEdgeFrame , dest , *nodeValues )
-    destDrop.pack()   
-
-    label = Label(singleEdgeFrame, text = "enter weight")
-    weightInput = Text(singleEdgeFrame, height = 1, width = 4)  
-    if weighted == TRUE:
-        label.pack()
-        weightInput.pack()
+    srcNode, destNode = src.get(), dest.get()
+    srcNode = Node.get_node(int(srcNode))
+    destNode = Node.get_node(int(destNode))
         
-    def submitEdge():
-        addEdgesBtn["state"] = NORMAL
-        submitEdgeBtn['state'] = DISABLED
-        LockEdgesBtn["state"] = NORMAL
-        weightInput.config(state = DISABLED)
+    weight = 0
 
-        srcNode, destNode = src.get(), dest.get()
-        srcNode = Node.get_node(int(srcNode))
-        destNode = Node.get_node(int(destNode))
-        
-        weight = 0
+    if weighted:
+        weight = int (weightInput.get("1.0",END))
 
-        if weighted:
-            weight = int (weightInput.get("1.0",END))
+    temp = [destNode, weight]
+    adj_list[srcNode].append (temp)
+    add_edge(srcNode.name,destNode.name,weight)
+    if directed == FALSE: 
+        temp = [srcNode, weight]
+        adj_list[destNode].append (temp)
 
-
-        temp = [destNode, weight]
-        adj_list[srcNode].append (temp)
-        add_edge(srcNode.name,destNode.name,weight)
-        if directed == FALSE: 
-            temp = [srcNode, weight]
-            adj_list[destNode].append (temp)
-
-
-    submitEdgeBtn = Button(singleEdgeFrame, text = "Submit Edge", command = submitEdge)
-    submitEdgeBtn.pack()
-
-    singleEdgeFrame.pack()
+    updateComboBoxes()
 
 def lockEdges():
     printGraph()
-
-    start = StringVar()
-    goal = StringVar()
-
-    start.set("Select Start Node")
-    goal.set("Select Goal Node")
-    startAndGoalFrame = Frame(GraphInputPage, width=30, height=30)
-    startNodeDrop = OptionMenu(startAndGoalFrame, start, *nodeValues)
-    goalNodeDrop = OptionMenu(startAndGoalFrame, goal, *nodeValues)
-
-    startNodeDrop.pack()
-    goalNodeDrop.pack()
-
 
     def submitStartAndEnd():
         global START_NODE
@@ -131,7 +94,7 @@ def lockEdges():
     submitStartAndEndBtn = Button(startAndGoalFrame, text = "Submit Start and Goal Node", command = submitStartAndEnd)
     submitStartAndEndBtn.pack()
 
-    startAndGoalFrame.pack(side = BOTTOM)
+
 def printGraph():
 
     for node in adj_list:
@@ -251,45 +214,91 @@ def update():
 
 
 GraphInputPage = Tk()
-GraphInputPage.geometry('900x800')
+GraphInputPage.geometry('900x700')
 GraphInputPage.title('Graph Input')
+
+
 fig = plt.figure()
 canvas = FigureCanvasTkAgg(fig, GraphInputPage)
 canvas.draw()
 canvas.get_tk_widget().pack(side=RIGHT, fill=Y)
 
-nodesAndEdgesFrame =  Frame(GraphInputPage, highlightbackground="blue", highlightthickness=2, width=250, height=600)
-nodesAndEdgesFrame.pack(side=LEFT)
+nodesAndEdgesFrame =  Frame(GraphInputPage, highlightbackground="blue", highlightthickness=2, width=250, height=400)
+nodesAndEdgesFrame.pack( anchor = "nw")
 nodesAndEdgesFrame.pack_propagate(0)
 
-nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="red", highlightthickness=2,width=250, height=300)
-nodesFrame.pack()
+
+nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="red", highlightthickness=2,width=250, height=100)
+nodesFrame.pack(ipady=20)
 nodesFrame.pack_propagate(0)
 
 addNodesLabel = Label (nodesFrame, text = "Adding Nodes")
-addNodesLabel.pack(ipady=20)
+addNodesLabel.pack(ipady=10)
 
-addNodesBtn= Button(nodesFrame, text="Click to add new node", command= addNode)
-addNodesBtn.pack(ipadx=10, ipady=10)
+addNodesBtn= Button(nodesFrame, text="Add a new Node", command= addNode)
+addNodesBtn.pack(ipadx=5, ipady=5)
 
-LockNodesBtn= Button(nodesFrame, text="Click to lock all nodes", command= LockNodes)
-LockNodesBtn.pack(ipadx=10, ipady=10)
 
-edgesFrame = Frame(nodesAndEdgesFrame, width=250, height=400)
-edgesFrame.pack()
+
+edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=2, width=250, height=150)
+edgesFrame.pack(ipady=20)
 edgesFrame.pack_propagate(0)
 
-singleEdgeFrame = Frame(edgesFrame, width=250, height=200)
+addEdgesLabel = Label (edgesFrame, text = "Adding Edges")
+addEdgesLabel.pack(ipady=10)
 
-addEdgesBtn= Button(edgesFrame, text="Click to add new edge", state = DISABLED, command= addEdge)
-addEdgesBtn.pack()
+src = StringVar()
+src.set( "Select Source" )
 
-LockEdgesBtn= Button(edgesFrame, text="Click to lock all edges",  state = DISABLED, command= lockEdges)
-LockEdgesBtn.pack()
+dest = StringVar() 
+dest.set( "Select Destination" )
+
+label = Label(edgesFrame, text = "enter weight")
+weightInput = Text(edgesFrame, height = 1, width = 4)
+
+
+srcDrop = Combobox(edgesFrame, textvariable = src, values= nodeValues)
+srcDrop['state'] = "readonly"
+srcDrop.pack(ipady=5) 
+
+destDrop = Combobox(edgesFrame, textvariable = dest, values= nodeValues)
+destDrop['state'] = "readonly"
+destDrop.pack(ipady=5)  
+
+addEdgeBtn = Button(edgesFrame, text = "Add Edge", command = addEdge)
+addEdgeBtn.pack(ipadx=5, ipady=5)
+
+
+if weighted == TRUE:
+    label.pack()
+    weightInput.pack()
+    
+
+start = StringVar()
+goal = StringVar()
+
+start.set("Select Start Node")
+goal.set("Select Goal Node")
+startAndGoalFrame = Frame(nodesAndEdgesFrame, width=250, height=100)
+
+startNodeDrop = Combobox(startAndGoalFrame, textvariable = start, values= nodeValues)
+goalNodeDrop = Combobox(startAndGoalFrame, textvariable = goal, values= nodeValues)
+
+startNodeDrop['state'] = 'readonly'
+goalNodeDrop['state'] = 'readonly'
+
+startNodeDrop.pack()
+goalNodeDrop.pack()
+startAndGoalFrame.pack()
+
 
 algoFrame = Frame(nodesAndEdgesFrame, width=250, height=200)
 algoFrame.pack()
 algoFrame.pack_propagate(0)
+
+
+
+       
 
 testAlgo = Button(GraphInputPage, text="Test Algorithm ID", state=NORMAL, command=run_ID)
 testAlgo.pack()
