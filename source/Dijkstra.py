@@ -1,38 +1,40 @@
 import heapq
 import sys
-from Graph_Input import nodes, adj_list
+from Graph_Input import Node, nodes, adj_list
+from queue import PriorityQueue
 
-def dijkstra(start):
-    print("called")
-
+def dijkstra(source: Node, goal: Node):
+    #self.visited_flag[source] == True
+    #self.visited_return.append(source.name)
     dist = {}
-    visited = {}
     for node in nodes:
         dist[node] = int(sys.maxsize)
-        visited[node] = False
-    
+ 
+    pq = PriorityQueue()
+    pq.put((0, source))
+    dist[source] = 0
+        
+    while pq.empty() == False:
+        topNode = pq.get()[1]
+        currCost = pq.ger()[0] 
 
-    dist[start] = 0
-
-    pq = [(0, start)]
-    
-
-    while len(pq) > 0:
-        _, topNode = heapq.heappop(pq)
-
-        if visited[topNode]:
+        if (currCost > dist[topNode]):
             continue
+        #self.visited_path.append(topNode.name)
 
-        visited[topNode] = True
+        #if not self.visited_flag[topNode]:
+        #    self.visited_return.append(topNode.name)
+        #    self.visited_flag[topNode] = True
+
+
+        #if topNode == goal:
+        #       self.generate_solution_path_and_calculate_total_cost(source, goal)
+        #       self.found = True
+        #       return
 
         for child in adj_list[topNode]:
-            print (child[0].name, "       ", child[1])
-            if dist[topNode] + child[1] < dist[child[0]]:
-                dist[child[0]] = dist[topNode] + child[1]
-                heapq.heappush(pq, (dist[child[0]], child[0]))
-    for num in dist:
-        print(num.name, "    ", dist[num])
-    return dist
-
-
-dijkstra (nodes[0])
+            if currCost + child[1] < dist[child[0]]:
+                dist[child[0]] = currCost + child[1]
+                pq.put(dist[child[0]], child[0])
+                #self.parent[childNode[0]] = [topNode, childNode[1]]
+    
