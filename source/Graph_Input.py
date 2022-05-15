@@ -118,8 +118,10 @@ def runAlgo():
     elif algo == "A*":
         print ("a*")
 
+G=nx.Graph()
 
-G = nx.DiGraph()
+if (directed):
+    G = nx.DiGraph()
 
 path = []
 visited_ID = []  # iterative deepening visited lists
@@ -131,7 +133,7 @@ ani = None
 def draw():
     global color_map
     positions = graphviz_layout(G, prog="dot", root=0)
-    nx.draw_networkx(G, pos=positions, with_labels=True, node_color=color_map, edgecolors="black")
+    nx.draw(G, pos=positions, with_labels=True, node_color=color_map, edgecolors="black")
     nx.draw_networkx_edge_labels(G, positions, edge_labels=nx.get_edge_attributes(G, 'w'), font_size=10,
                                  rotate=False)
     # nx.draw_networkx_labels(G,pos=h_positions,labels=nx.get_node_attributes(G,"heuristic"))
@@ -359,6 +361,9 @@ testAlgo.pack()
 
 testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
 testAlgo.pack()
+
+
+##########################################  HEURISTICS WINDOW #############################################################
 
 GraphInputPage.mainloop()
 
