@@ -34,18 +34,6 @@ def addNode():
     currNum = currNum+1 
 
     updateComboBoxes()
-    # ---------- Will use this in entering heuristics -------------------
-    # heurLabel = Label(singleNodeFrame, text = "Enter Node Heuristic")
-    # heurInput = Text(singleNodeFrame, height = 1, width = 4)  
-    # heurLabel.pack()
-    # heurInput.pack()  
-
-    # def submitNode():
-    #     addNodesBtn['state'] = NORMAL
-    #     submitNodeBtn['state'] = DISABLED
-    
-    # submitNodeBtn = Button(singleNodeFrame, text = "Submit Node", command = submitNode)
-    # submitNodeBtn.pack()
 
 def updateComboBoxes():
     src.set( "Select Source" )
@@ -104,14 +92,31 @@ def printGraph():
 
 def run_DFS():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
-    alg.dfs(START_NODE, GOAL_NODES)
-    # animate_solution(alg.get_visited_path())
+    alg.dfs(START_NODE, GOAL_NODES[0])
+    animate_solution(alg.get_visited_path())
 
 
 def run_ID():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
-    alg.iterative_deepening(START_NODE, GOAL_NODES, sys.maxsize)
-    # animate_solution(alg.get_visited_path())
+    alg.iterative_deepening(START_NODE, GOAL_NODES[0], sys.maxsize)
+    animate_solution(alg.get_visited_path())
+
+def runAlgo():
+    algo = selectedAlgorithm.get()
+    if algo == "Iterative Deepening":
+        run_ID()
+    elif algo == "Depth First Search":
+        run_DFS()
+    elif algo == "Breadth First Search":
+        print("BFS")
+    elif algo == "Dijkstra":
+        print("dij")
+    elif algo == "Depth Limited":
+        print ("dL")
+    elif algo == "Greedy Best First Search":
+        print("greedy")
+    elif algo == "A*":
+        print ("a*")
 
 
 G = nx.DiGraph()
@@ -223,24 +228,26 @@ canvas = FigureCanvasTkAgg(fig, GraphInputPage)
 canvas.draw()
 canvas.get_tk_widget().pack(side=RIGHT, fill=Y)
 
-nodesAndEdgesFrame =  Frame(GraphInputPage, highlightbackground="blue", highlightthickness=2, width=350, height=400)
-nodesAndEdgesFrame.pack( anchor = "nw")
-nodesAndEdgesFrame.pack_propagate(0)
+nodesAndEdgesFrame =  Frame(GraphInputPage, width=350)
+nodesAndEdgesFrame.pack( side=LEFT, fill=Y)
 
+##########################################  ADDING NODES #############################################################
 
-nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="red", highlightthickness=2,width=350, height=90)
-nodesFrame.pack(ipady=10)
+nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=90)
+nodesFrame.pack(ipady=7)
 nodesFrame.pack_propagate(0)
 
 addNodesLabel = Label (nodesFrame, text = "Adding Nodes")
-addNodesLabel.pack(ipady=10)
+addNodesLabel.pack(ipady=8)
 
 addNodesBtn= Button(nodesFrame, text="Add a new Node", command= addNode)
 addNodesBtn.pack(ipadx=5, ipady=5)
 
 
+##########################################  ADDING EDGES #############################################################
 
-edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=2, width=350, height=150)
+
+edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=150)
 edgesFrame.pack(ipady=20)
 edgesFrame.pack_propagate(0)
 
@@ -276,11 +283,11 @@ addEdgeBtn = Button(edgesFrame, text = "Add Edge", command = addEdge)
 addEdgeBtn.pack(ipadx=5, ipady=5)
 
 
-    
+
+##########################################  SELECTING START AND GOAL #############################################################
 
 
-
-startAndGoalFrame = Frame(nodesAndEdgesFrame, width=350, height=100)
+startAndGoalFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=100)
 
 startFrame = Frame(startAndGoalFrame, width=350)
 startNodeLabel = Label(startFrame, text = "Start Node: ")
@@ -309,40 +316,56 @@ submitStartNodeBtn.pack(ipady=5)
 startFrame.pack()
 goalFrame.pack()
 startAndGoalFrame.pack()
+startAndGoalFrame.pack_propagate(0)
 
 
-algoFrame = Frame(nodesAndEdgesFrame, width=350, height=200)
-algoFrame.pack()
+
+##########################################  SELECTING ALGORITHM #############################################################
+
+algoFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=100)
+algoFrame.pack(ipady=10)
 algoFrame.pack_propagate(0)
 
+label3 = Label(algoFrame, text = "Select an Algorithm")
+selectedAlgorithm = StringVar()
+selectedAlgorithm.set("Select Algorithm")
+algorithmsDrop = Combobox(algoFrame, textvariable = selectedAlgorithm, values= [
+    "Iterative Deepening", 
+    "Depth First Search",
+    "Breadth First Search",
+    "Dijkstra",
+    "Depth Limited",
+    "Greedy Best First Search",
+    "A*"
+    ])
+algorithmsDrop['state'] = 'readonly'
 
+testAlgoBtn = Button(algoFrame, text="Test Algorithm", state=NORMAL, command=runAlgo)
 
-testAlgo = Button(GraphInputPage, text="Test Algorithm ID", state=NORMAL, command=run_ID)
+label3.pack(ipady=3)
+algorithmsDrop.pack()
+testAlgoBtn.pack()
+
+##########################################  SOLUTION ANIMATIONS #############################################################
+
+solutionsAnimationsFrame = Frame(nodesAndEdgesFrame, width=350, height=100)
+solutionsAnimationsFrame.pack(ipady=10)
+
+testAlgo = Button(solutionsAnimationsFrame, text="Show Path", state=NORMAL, command=show_solution_path)
 testAlgo.pack()
 
-testAlgo = Button(GraphInputPage, text="Test Algorithm DFS", state=NORMAL, command=run_DFS)
+testAlgo = Button(solutionsAnimationsFrame, text="Show Visited", state=NORMAL, command=show_visited)
 testAlgo.pack()
 
-testAlgo = Button(GraphInputPage, text="Show Path", state=NORMAL, command=show_solution_path)
-testAlgo.pack()
-
-testAlgo = Button(GraphInputPage, text="Show Visited", state=NORMAL, command=show_visited)
-testAlgo.pack()
-
-testAlgo = Button(GraphInputPage, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
-testAlgo.pack()
-
-testAlgo = Button(GraphInputPage, text="Animate Solution", state=NORMAL, command=animate_solution)
+testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
 testAlgo.pack()
 
 GraphInputPage.mainloop()
 
-# Todo
 
+# Todo
 # can there be no path from source to destination node (source node is a leaf node in a directed graph)
 # can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
-# the select source/goal for the algorithm can be just disabled (there is currently a bug where whenever you click on lock edges a new instance of those is created)
-# there is no need for the lock nodes/edges buttons
 # there will be a button for only showing the visited nodes for iterative deepening (this one is different from the one used in the other algorithms)
 # when the window is minimized some buttons (the ones responsible for the source/goal nodes) are partially hidden by the canvas
 # should we show the algorithm animation by default or have a button for it
