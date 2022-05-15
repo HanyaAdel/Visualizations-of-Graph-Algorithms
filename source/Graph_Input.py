@@ -19,7 +19,7 @@ currNum = 0
 nodeValues = []
 
 START_NODE = 0
-GOAL_NODE = 0
+GOAL_NODES = []
 
 alg = Algorithms()
 
@@ -81,19 +81,20 @@ def addEdge():
 
     updateComboBoxes()
 
-def lockEdges():
-    printGraph()
 
-    def submitStartAndEnd():
-        global START_NODE
-        global GOAL_NODE
-        START_NODE = start.get()
-        GOAL_NODE = goal.get()
-        START_NODE = Node.get_node(int(START_NODE))
-        GOAL_NODE = Node.get_node(int(GOAL_NODE))
-    submitStartAndEndBtn = Button(startAndGoalFrame, text = "Submit Start and Goal Node", command = submitStartAndEnd)
-    submitStartAndEndBtn.pack()
+def submitStartNode():
+    global START_NODE
+    startNode = start.get()
+    START_NODE = Node.get_node(int(startNode))
+    print("Submitted successfully" , START_NODE.name)
 
+
+def submitGoalNode():
+    global GOAL_NODES
+    goalNode = goal.get()
+    tempNode = Node.get_node(int(goalNode))
+    GOAL_NODES.append(tempNode)
+    print("Submitted successfully" , tempNode.name)
 
 def printGraph():
 
@@ -103,13 +104,13 @@ def printGraph():
 
 def run_DFS():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
-    alg.dfs(START_NODE, GOAL_NODE)
+    alg.dfs(START_NODE, GOAL_NODES)
     # animate_solution(alg.get_visited_path())
 
 
 def run_ID():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
-    alg.iterative_deepening(START_NODE, GOAL_NODE, sys.maxsize)
+    alg.iterative_deepening(START_NODE, GOAL_NODES, sys.maxsize)
     # animate_solution(alg.get_visited_path())
 
 
@@ -214,7 +215,6 @@ def update():
 
 
 GraphInputPage = Tk()
-GraphInputPage.geometry('900x700')
 GraphInputPage.title('Graph Input')
 
 
@@ -223,13 +223,13 @@ canvas = FigureCanvasTkAgg(fig, GraphInputPage)
 canvas.draw()
 canvas.get_tk_widget().pack(side=RIGHT, fill=Y)
 
-nodesAndEdgesFrame =  Frame(GraphInputPage, highlightbackground="blue", highlightthickness=2, width=250, height=400)
+nodesAndEdgesFrame =  Frame(GraphInputPage, highlightbackground="blue", highlightthickness=2, width=350, height=400)
 nodesAndEdgesFrame.pack( anchor = "nw")
 nodesAndEdgesFrame.pack_propagate(0)
 
 
-nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="red", highlightthickness=2,width=250, height=100)
-nodesFrame.pack(ipady=20)
+nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="red", highlightthickness=2,width=350, height=90)
+nodesFrame.pack(ipady=10)
 nodesFrame.pack_propagate(0)
 
 addNodesLabel = Label (nodesFrame, text = "Adding Nodes")
@@ -240,7 +240,7 @@ addNodesBtn.pack(ipadx=5, ipady=5)
 
 
 
-edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=2, width=250, height=150)
+edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=2, width=350, height=150)
 edgesFrame.pack(ipady=20)
 edgesFrame.pack_propagate(0)
 
@@ -253,9 +253,11 @@ src.set( "Select Source" )
 dest = StringVar() 
 dest.set( "Select Destination" )
 
-label = Label(edgesFrame, text = "enter weight")
-weightInput = Text(edgesFrame, height = 1, width = 4)
-
+weightFrame = Frame(edgesFrame, width=250)
+label = Label(weightFrame, text = "Enter Weight")
+weightInput = Text(weightFrame, height = 1, width = 4)
+label.pack(side=LEFT, ipadx= 3)
+weightInput.pack(side=LEFT)
 
 srcDrop = Combobox(edgesFrame, textvariable = src, values= nodeValues)
 srcDrop['state'] = "readonly"
@@ -265,40 +267,55 @@ destDrop = Combobox(edgesFrame, textvariable = dest, values= nodeValues)
 destDrop['state'] = "readonly"
 destDrop.pack(ipady=5)  
 
+
+if weighted == TRUE:
+    weightFrame.pack(ipady = 7)
+
+
 addEdgeBtn = Button(edgesFrame, text = "Add Edge", command = addEdge)
 addEdgeBtn.pack(ipadx=5, ipady=5)
 
 
-if weighted == TRUE:
-    label.pack()
-    weightInput.pack()
     
 
+
+
+startAndGoalFrame = Frame(nodesAndEdgesFrame, width=350, height=100)
+
+startFrame = Frame(startAndGoalFrame, width=350)
+startNodeLabel = Label(startFrame, text = "Start Node: ")
 start = StringVar()
-goal = StringVar()
-
 start.set("Select Start Node")
-goal.set("Select Goal Node")
-startAndGoalFrame = Frame(nodesAndEdgesFrame, width=250, height=100)
-
-startNodeDrop = Combobox(startAndGoalFrame, textvariable = start, values= nodeValues)
-goalNodeDrop = Combobox(startAndGoalFrame, textvariable = goal, values= nodeValues)
-
+startNodeDrop = Combobox(startFrame, textvariable = start, values= nodeValues, width=15)
 startNodeDrop['state'] = 'readonly'
-goalNodeDrop['state'] = 'readonly'
+startNodeLabel.pack(side=LEFT, ipadx=5)
+startNodeDrop.pack(side=LEFT)
+submitStartNodeBtn = Button(startFrame, text="Submit Start Node", state=NORMAL, command=submitStartNode)
+submitStartNodeBtn.pack(ipady=5)
 
-startNodeDrop.pack()
-goalNodeDrop.pack()
+
+goalFrame = Frame(startAndGoalFrame, width=350)
+goalNodeLabel = Label(goalFrame, text = "Goal Node(s): ")
+goal = StringVar()
+goal.set("Select Goal Node")
+goalNodeDrop = Combobox(goalFrame, textvariable = goal, values= nodeValues, width=15)
+goalNodeDrop['state'] = 'readonly'
+goalNodeLabel.pack(side=LEFT, ipadx=5)
+goalNodeDrop.pack(side=LEFT)
+submitStartNodeBtn = Button(goalFrame, text="Submit Goal Node", state=NORMAL, command=submitGoalNode)
+submitStartNodeBtn.pack(ipady=5)
+
+
+startFrame.pack()
+goalFrame.pack()
 startAndGoalFrame.pack()
 
 
-algoFrame = Frame(nodesAndEdgesFrame, width=250, height=200)
+algoFrame = Frame(nodesAndEdgesFrame, width=350, height=200)
 algoFrame.pack()
 algoFrame.pack_propagate(0)
 
 
-
-       
 
 testAlgo = Button(GraphInputPage, text="Test Algorithm ID", state=NORMAL, command=run_ID)
 testAlgo.pack()
@@ -321,19 +338,14 @@ testAlgo.pack()
 GraphInputPage.mainloop()
 
 # Todo
-# I can't see the test algo button (I changed it to be in the main frame for now)
+
 # can there be no path from source to destination node (source node is a leaf node in a directed graph)
 # can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
 # the select source/goal for the algorithm can be just disabled (there is currently a bug where whenever you click on lock edges a new instance of those is created)
 # there is no need for the lock nodes/edges buttons
 # there will be a button for only showing the visited nodes for iterative deepening (this one is different from the one used in the other algorithms)
-# increase graph canvas area
 # when the window is minimized some buttons (the ones responsible for the source/goal nodes) are partially hidden by the canvas
-# fix the multiple windows bug
-# there is no need for the add edge button you can just reset the two lists when you hit submit edge
 # should we show the algorithm animation by default or have a button for it
-# we can probably add nodes and edges simultaneously
-# should we include all the algorithms in one class?
 # add reset graph button
 # add back button for changing the graph type (directed, undirected, weighted, unweighted)
 
