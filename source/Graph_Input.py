@@ -101,6 +101,22 @@ def run_ID():
     alg.iterative_deepening(START_NODE, GOAL_NODES[0], sys.maxsize)
     animate_solution(alg.get_visited_path())
 
+def run_BFS():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.bfs(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())
+
+def run_greedy_best_first_search():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.greedy_best_first_search(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())
+
+def run_dijkstra():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.dijkstra(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())
+
+
 def runAlgo():
     algo = selectedAlgorithm.get()
     if algo == "Iterative Deepening":
@@ -109,12 +125,15 @@ def runAlgo():
         run_DFS()
     elif algo == "Breadth First Search":
         print("BFS")
+        run_BFS()
     elif algo == "Dijkstra":
         print("dij")
+        run_dijkstra
     elif algo == "Depth Limited":
         print ("dL")
     elif algo == "Greedy Best First Search":
         print("greedy")
+        run_greedy_best_first_search
     elif algo == "A*":
         print ("a*")
 

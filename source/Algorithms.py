@@ -1,5 +1,6 @@
 from dis import dis
 import sys
+from tkinter import TOP
 from Graph import Node, nodes, adj_list
 from queue import PriorityQueue
 
@@ -59,6 +60,13 @@ class Algorithms:
         return self.totalCost
 
 
+    def isGoalNode (self, currNode: Node, goalNodes = []):
+        for node in goalNodes:
+            if (currNode == node):
+                self.found = True
+                return True
+        return False
+
     def depth_limited(self, source: Node, goal: Node, max_depth, depth=0):
         self.path.append(source.name)
         self.visited_path.append(source.name)
@@ -96,7 +104,6 @@ class Algorithms:
                 return
 
 
-
     def generate_solution_path_and_calculate_total_cost(self, source:Node, goal:Node):
         node = [goal, 0]
         self.path.append(node[0].name)
@@ -109,9 +116,9 @@ class Algorithms:
        
         return
 
-    def bfs(self, source: Node, goal:Node):
+    def bfs(self, source: Node, goalNodes = []):
         self.queue.append(source)
-        self.visited_flag[source] == True
+        self.visited_flag[source] = True
         self.visited_return.append(source.name)
         
         while self.queue:          # Creating loop to visit each node
@@ -119,9 +126,8 @@ class Algorithms:
             self.visited_path.append(frontNode.name)
             
 
-            if frontNode == goal:
-                self.generate_solution_path_and_calculate_total_cost(source, goal)
-                self.found = True
+            if self.isGoalNode(frontNode, goalNodes):
+                self.generate_solution_path_and_calculate_total_cost(source, frontNode)
                 return
             
             for child in adj_list[frontNode]:
@@ -132,9 +138,9 @@ class Algorithms:
                     self.queue.append(child[0])
 
 
-    def greedy_best_first_search(self, source: Node, goal: Node):
+    def greedy_best_first_search(self, source: Node, goalNodes = []):
 
-        self.visited_flag[source] == True
+        self.visited_flag[source] = True
         self.visited_return.append(source.name)
 
         pq = PriorityQueue()
@@ -144,8 +150,8 @@ class Algorithms:
             topNode = pq.get()[1]
             self.visited_path.append(topNode.name)
 
-            if topNode == goal:
-                self.generate_solution_path_and_calculate_total_cost(source, goal)
+            if self.isGoalNode(topNode, goalNodes):
+                self.generate_solution_path_and_calculate_total_cost(source, topNode)
                 self.found = True
                 return
     
@@ -157,7 +163,7 @@ class Algorithms:
                     pq.put((childNode[0].heuristic, childNode[0]))
         
     
-    def dijkstra(self, source: Node, goal: Node):
+    def dijkstra(self, source: Node, goalNodes= []):
     
         dist = {}
         for node in nodes:
@@ -181,8 +187,8 @@ class Algorithms:
                 self.visited_flag[topNode] = True
 
 
-            if topNode == goal:
-                   self.generate_solution_path_and_calculate_total_cost(source, goal)
+            if self.isGoalNode(topNode, goalNodes):
+                   self.generate_solution_path_and_calculate_total_cost(source, topNode)
                    self.found = True
                    return
 
