@@ -2,7 +2,6 @@ import sys
 from tkinter import *
 from tkinter.ttk import Combobox
 from Main_Page import directed, weighted
-from collections import defaultdict
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib import animation
