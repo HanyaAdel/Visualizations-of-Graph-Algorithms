@@ -1,11 +1,13 @@
 from dis import dis
 import sys
+from tkinter import TOP
 from Graph import Node, nodes, adj_list
 from queue import PriorityQueue
 
 
 class Algorithms:
     found = False
+    START_NODE = 0          # start node for calculating solution path for depth limited based algorithms
     visited_return = []     # visited list to be returned
     visited_return_ID = []  # visited list to be returned for iterative deepening algorithm
     visited_flag = {}       # to avoid duplicates in visited_return (also consider using ordered sets to eliminate this)
@@ -59,8 +61,15 @@ class Algorithms:
         return self.totalCost
 
 
-    def depth_limited(self, source: Node, goal: Node, max_depth, depth=0):
-        self.path.append(source.name)
+    def isGoalNode (self, currNode: Node, goalNodes = []):
+        for node in goalNodes:
+            if (currNode == node):
+                self.found = True
+                return True
+        return False
+
+    def depth_limited(self, source: Node, goalNodes: [], max_depth, depth=0):
+        #self.path.append(source.name)
         self.visited_path.append(source.name)
         self.visited[source] = True
 
@@ -68,20 +77,23 @@ class Algorithms:
             self.visited_return.append(source.name)
             self.visited_flag[source] = True
 
-        if source == goal:
+        if self.isGoalNode(source, goalNodes):
             self.found = True
+            self.generate_solution_path_and_calculate_total_cost(self.START_NODE,source)
             return
         if depth != max_depth:
             for child in adj_list[source]:
                 child_node = child[0]
+                edge_weight = child[1]
                 if not self.visited[child_node]:
+                    self.parent[child_node] = [source, edge_weight]
                     # self.visited[child_node] = True
-                    self.depth_limited(child_node, goal, max_depth, depth + 1)
+                    self.depth_limited(child_node, goalNodes, max_depth, depth + 1)
                     if self.found:
                         return
                     self.visited[child_node] = False
 
-        self.path.pop()
+        #self.path.pop()
 
     def dfs(self, source, goal):
         return self.depth_limited(source, goal, sys.maxsize)
@@ -96,7 +108,6 @@ class Algorithms:
                 return
 
 
-
     def generate_solution_path_and_calculate_total_cost(self, source:Node, goal:Node):
         node = [goal, 0]
         self.path.append(node[0].name)
@@ -109,9 +120,9 @@ class Algorithms:
        
         return
 
-    def bfs(self, source: Node, goal:Node):
+    def bfs(self, source: Node, goalNodes = []):
         self.queue.append(source)
-        self.visited_flag[source] == True
+        self.visited_flag[source] = True
         self.visited_return.append(source.name)
         
         while self.queue:          # Creating loop to visit each node
@@ -119,9 +130,8 @@ class Algorithms:
             self.visited_path.append(frontNode.name)
             
 
-            if frontNode == goal:
-                self.generate_solution_path_and_calculate_total_cost(source, goal)
-                self.found = True
+            if self.isGoalNode(frontNode, goalNodes):
+                self.generate_solution_path_and_calculate_total_cost(source, frontNode)
                 return
             
             for child in adj_list[frontNode]:
@@ -132,21 +142,20 @@ class Algorithms:
                     self.queue.append(child[0])
 
 
-    def greedy_best_first_search(self, source: Node, goal: Node):
+    def greedy_best_first_search(self, source: Node, goalNodes = []):
 
-        self.visited_flag[source] == True
+        self.visited_flag[source] = True
         self.visited_return.append(source.name)
 
         pq = PriorityQueue()
-        pq.put((source.heuristic, source))
+        pq.put((source.heuristic, source.name))
         
         while pq.empty() == False:
-            topNode = pq.get()[1]
+            topNode = Node.get_node(pq.get()[1])
             self.visited_path.append(topNode.name)
 
-            if topNode == goal:
-                self.generate_solution_path_and_calculate_total_cost(source, goal)
-                self.found = True
+            if self.isGoalNode(topNode, goalNodes):
+                self.generate_solution_path_and_calculate_total_cost(source, topNode)
                 return
     
             for childNode in adj_list[topNode]:
@@ -154,10 +163,10 @@ class Algorithms:
                     self.visited_flag[childNode[0]] = True
                     self.visited_return.append(childNode[0].name)
                     self.parent[childNode[0]] = [topNode, childNode[1]]
-                    pq.put((childNode[0].heuristic, childNode[0]))
+                    pq.put((childNode[0].heuristic, childNode[0].name))
         
     
-    def dijkstra(self, source: Node, goal: Node):
+    def dijkstra(self, source: Node, goalNodes= []):
     
         dist = {}
         for node in nodes:
@@ -165,11 +174,11 @@ class Algorithms:
     
         pq = PriorityQueue()
         dist[source] = 0
-        pq.put((0, source))
+        pq.put((0, source.name))
 
         while pq.empty() == False:
             top = pq.get()
-            topNode =  top[1]
+            topNode =  Node.get_node(top[1])
             currCost = top[0]
            
             if (currCost > dist[topNode]):
@@ -181,14 +190,14 @@ class Algorithms:
                 self.visited_flag[topNode] = True
 
 
-            if topNode == goal:
-                   self.generate_solution_path_and_calculate_total_cost(source, goal)
-                   self.found = True
+            if self.isGoalNode(topNode, goalNodes):
+                   self.generate_solution_path_and_calculate_total_cost(source, topNode)
                    return
 
             for child in adj_list[topNode]:
                 if currCost + child[1] < dist[child[0]]:
                     dist[child[0]] = currCost + child[1]
-                    pq.put((dist[child[0]], child[0]))
+                    pq.put((dist[child[0]], child[0].name))
                     self.parent[child[0]] = [topNode, child[1]]
+
 

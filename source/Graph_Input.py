@@ -73,6 +73,8 @@ def submitStartNode():
     global START_NODE
     startNode = start.get()
     START_NODE = Node.get_node(int(startNode))
+    nx.set_node_attributes(G,{START_NODE.name:{'color': "cyan"}})
+    update()
     print("Submitted successfully" , START_NODE.name)
 
 
@@ -81,6 +83,8 @@ def submitGoalNode():
     goalNode = goal.get()
     tempNode = Node.get_node(int(goalNode))
     GOAL_NODES.append(tempNode)
+    nx.set_node_attributes(G, {tempNode.name: {'color': "orange"}})
+    update()
     print("Submitted successfully" , tempNode.name)
 
 def printGraph():
@@ -91,16 +95,33 @@ def printGraph():
 
 def run_DFS():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
-    alg.dfs(START_NODE, GOAL_NODES[0])
+    alg.dfs(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 
 def run_ID():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
-    alg.iterative_deepening(START_NODE, GOAL_NODES[0], sys.maxsize)
+    alg.iterative_deepening(START_NODE, GOAL_NODES, sys.maxsize)
     animate_solution(alg.get_visited_path())
 
+def run_BFS():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.bfs(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())
+
+def run_greedy_best_first_search():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.greedy_best_first_search(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())
+
+def run_dijkstra():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.dijkstra(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())
+
+
 def runAlgo():
+    alg.START_NODE = START_NODE                # this if for depth limited path calculation Todo
     algo = selectedAlgorithm.get()
     if algo == "Iterative Deepening":
         run_ID()
@@ -108,12 +129,15 @@ def runAlgo():
         run_DFS()
     elif algo == "Breadth First Search":
         print("BFS")
+        run_BFS()
     elif algo == "Dijkstra":
         print("dij")
+        run_dijkstra()
     elif algo == "Depth Limited":
         print ("dL")
     elif algo == "Greedy Best First Search":
         print("greedy")
+        run_greedy_best_first_search()
     elif algo == "A*":
         print ("a*")
 
@@ -375,4 +399,7 @@ GraphInputPage.mainloop()
 # should we show the algorithm animation by default or have a button for it
 # add reset graph button
 # add back button for changing the graph type (directed, undirected, weighted, unweighted)
+
+# new Todo
+# add button to reset start/goal nodes
 
