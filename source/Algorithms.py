@@ -68,7 +68,7 @@ class Algorithms:
                 return True
         return False
 
-    def depth_limited(self, source: Node, goalNodes: [], max_depth, depth=0):
+    def depth_limited(self, source: Node, goalNodes, max_depth, depth=0):
         #self.path.append(source.name)
         self.visited_path.append(source.name)
         self.visited[source] = True
