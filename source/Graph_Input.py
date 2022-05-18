@@ -128,12 +128,12 @@ def runAlgo():
         run_BFS()
     elif algo == "Dijkstra":
         print("dij")
-        run_dijkstra
+        run_dijkstra()
     elif algo == "Depth Limited":
         print ("dL")
     elif algo == "Greedy Best First Search":
         print("greedy")
-        run_greedy_best_first_search
+        run_greedy_best_first_search()
     elif algo == "A*":
         print ("a*")
 

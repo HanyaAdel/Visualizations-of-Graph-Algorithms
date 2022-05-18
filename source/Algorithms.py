@@ -144,15 +144,14 @@ class Algorithms:
         self.visited_return.append(source.name)
 
         pq = PriorityQueue()
-        pq.put((source.heuristic, source))
+        pq.put((source.heuristic, source.name))
         
         while pq.empty() == False:
-            topNode = pq.get()[1]
+            topNode = Node.get_node(pq.get()[1])
             self.visited_path.append(topNode.name)
 
             if self.isGoalNode(topNode, goalNodes):
                 self.generate_solution_path_and_calculate_total_cost(source, topNode)
-                self.found = True
                 return
     
             for childNode in adj_list[topNode]:
@@ -160,7 +159,7 @@ class Algorithms:
                     self.visited_flag[childNode[0]] = True
                     self.visited_return.append(childNode[0].name)
                     self.parent[childNode[0]] = [topNode, childNode[1]]
-                    pq.put((childNode[0].heuristic, childNode[0]))
+                    pq.put((childNode[0].heuristic, childNode[0].name))
         
     
     def dijkstra(self, source: Node, goalNodes= []):
@@ -171,11 +170,11 @@ class Algorithms:
     
         pq = PriorityQueue()
         dist[source] = 0
-        pq.put((0, source))
+        pq.put((0, source.name))
 
         while pq.empty() == False:
             top = pq.get()
-            topNode =  top[1]
+            topNode =  Node.get_node(top[1])
             currCost = top[0]
            
             if (currCost > dist[topNode]):
@@ -189,12 +188,12 @@ class Algorithms:
 
             if self.isGoalNode(topNode, goalNodes):
                    self.generate_solution_path_and_calculate_total_cost(source, topNode)
-                   self.found = True
                    return
 
             for child in adj_list[topNode]:
                 if currCost + child[1] < dist[child[0]]:
                     dist[child[0]] = currCost + child[1]
-                    pq.put((dist[child[0]], child[0]))
+                    pq.put((dist[child[0]], child[0].name))
                     self.parent[child[0]] = [topNode, child[1]]
+
 
