@@ -7,6 +7,7 @@ from queue import PriorityQueue
 
 class Algorithms:
     found = False
+    START_NODE = 0          # start node for calculating solution path for depth limited based algorithms
     visited_return = []     # visited list to be returned
     visited_return_ID = []  # visited list to be returned for iterative deepening algorithm
     visited_flag = {}       # to avoid duplicates in visited_return (also consider using ordered sets to eliminate this)
@@ -67,8 +68,8 @@ class Algorithms:
                 return True
         return False
 
-    def depth_limited(self, source: Node, goal: Node, max_depth, depth=0):
-        self.path.append(source.name)
+    def depth_limited(self, source: Node, goalNodes: [], max_depth, depth=0):
+        #self.path.append(source.name)
         self.visited_path.append(source.name)
         self.visited[source] = True
 
@@ -76,20 +77,23 @@ class Algorithms:
             self.visited_return.append(source.name)
             self.visited_flag[source] = True
 
-        if source == goal:
+        if self.isGoalNode(source, goalNodes):
             self.found = True
+            self.generate_solution_path_and_calculate_total_cost(self.START_NODE,source)
             return
         if depth != max_depth:
             for child in adj_list[source]:
                 child_node = child[0]
+                edge_weight = child[1]
                 if not self.visited[child_node]:
+                    self.parent[child_node] = [source, edge_weight]
                     # self.visited[child_node] = True
-                    self.depth_limited(child_node, goal, max_depth, depth + 1)
+                    self.depth_limited(child_node, goalNodes, max_depth, depth + 1)
                     if self.found:
                         return
                     self.visited[child_node] = False
 
-        self.path.pop()
+        #self.path.pop()
 
     def dfs(self, source, goal):
         return self.depth_limited(source, goal, sys.maxsize)
