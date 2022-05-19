@@ -75,7 +75,6 @@ def submitStartNode():
     START_NODE = Node.get_node(int(startNode))
     nx.set_node_attributes(G,{START_NODE.name:{'color': "cyan"}})
     update()
-    print("Submitted successfully" , START_NODE.name)
 
 
 def submitGoalNode():
@@ -85,7 +84,6 @@ def submitGoalNode():
     GOAL_NODES.append(tempNode)
     nx.set_node_attributes(G, {tempNode.name: {'color': "orange"}})
     update()
-    print("Submitted successfully" , tempNode.name)
 
 def printGraph():
 
@@ -122,30 +120,48 @@ def run_dijkstra():
 
 def openPopup():
     
-    heuristicsPage = Toplevel(GraphInputPage)
-    heuristicsPage.title('Heuristics Input')   
-    putInput(0)
 
+
+    def closeWindow():
+        heuristicsPage.destroy()
+        heuristicsPage.update()
+    
+    def reset():
+        for widgets in heuristicsPage.winfo_children():
+            widgets.destroy()
+        putInput(0)
+    
     def putInput(i):
         if i >= len(nodes):
+            submitAll = Button( heuristicsPage, text = "Submit All Values", command= closeWindow)
+            clearAll = Button( heuristicsPage, text = "Clear All Values", command= reset)
 
-            heuristicsPage.destroy()
-            heuristicsPage.update()
+            submitAll.pack()
+            clearAll.pack()
+
             return
         
         addHeurLabel = Label (heuristicsPage, text = nodes[i].name)
         HeurInput = Text(heuristicsPage, height = 1, width = 4)
 
         submitHeuristic = Button( heuristicsPage, text = "Submit Heuristic", 
-        command= lambda: setHeur(HeurInput, nodes[i], i) )
+        command= lambda: setHeur(HeurInput, submitHeuristic,nodes[i], i) )
 
         addHeurLabel.pack()
         HeurInput.pack()
         submitHeuristic.pack()
 
-    def setHeur(heurInput: Text, node:Node):
-        node.heuristic = int (heurInput.get('1.0', END))
 
+    def setHeur(heurInput: Text, submitHeuristic:Button, node:Node, i):
+        node.heuristic = int (heurInput.get('1.0', END))
+        heurInput["state"] = DISABLED
+        submitHeuristic["state"] = DISABLED
+        putInput(i+1)
+
+
+    heuristicsPage = Toplevel(GraphInputPage)
+    heuristicsPage.title('Heuristics Input')   
+    putInput(0)
     GraphInputPage.wait_window(heuristicsPage)
 
 
@@ -275,6 +291,16 @@ def update():
     canvas.draw()
 
 
+def resetSandG():
+    start.set( "Select Start Node" )
+
+    goal.set("Select Goal Node")
+
+    global START_NODE, GOAL_NODES
+    START_NODE = 0
+    GOAL_NODES.clear()
+
+
 GraphInputPage = Tk()
 GraphInputPage.title('Graph Input')
 
@@ -369,8 +395,10 @@ submitStartNodeBtn = Button(goalFrame, text="Submit Goal Node", state=NORMAL, co
 submitStartNodeBtn.pack(ipady=5)
 
 
+resetStartAndGoal = Button(startAndGoalFrame, text = "Reset Start and Goal Nodes", command= resetSandG())
 startFrame.pack()
 goalFrame.pack()
+resetStartAndGoal.pack()
 startAndGoalFrame.pack()
 startAndGoalFrame.pack_propagate(0)
 
@@ -421,16 +449,13 @@ testAlgo.pack()
 
 GraphInputPage.mainloop()
 
-
 # Todo
 # can there be no path from source to destination node (source node is a leaf node in a directed graph)
 # can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
 # there will be a button for only showing the visited nodes for iterative deepening (this one is different from the one used in the other algorithms)
-# when the window is minimized some buttons (the ones responsible for the source/goal nodes) are partially hidden by the canvas
-# should we show the algorithm animation by default or have a button for it
 # add reset graph button
 # add back button for changing the graph type (directed, undirected, weighted, unweighted)
 
 # new Todo
-# add button to reset start/goal nodes
+# clearing start and goal in graph 
 
