@@ -65,6 +65,11 @@ def run_greedy_best_first_search():
     alg.greedy_best_first_search(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
+def run_A_star():
+    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.A_star_search(START_NODE, GOAL_NODES)
+    animate_solution(alg.get_visited_path())    
+
 def run_dijkstra():
     alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
     alg.dijkstra(START_NODE, GOAL_NODES)
@@ -124,22 +129,27 @@ def runAlgo():
     algo = selectedAlgorithm.get()
     if algo == "Iterative Deepening":
         run_ID()
+    
     elif algo == "Depth First Search":
         run_DFS()
+    
     elif algo == "Breadth First Search":
-        print("BFS")
         run_BFS()
+    
     elif algo == "Dijkstra":
-        print("dij")
         run_dijkstra()
+    
     elif algo == "Depth Limited":
         print ("dL")
+    
     elif algo == "Greedy Best First Search":
         openPopup()
         run_greedy_best_first_search()
 
     elif algo == "A*":
-        print("a*")
+        openPopup()
+        run_A_star()
+        
 
 G=nx.Graph()
 
@@ -257,8 +267,8 @@ def updateComboBoxes():
 
     startNodeDrop['values'] = nodeValues
     goalNodeDrop['values'] = nodeValues
-
     weightInput.delete('1.0', END)
+    resetSandG()
 
 
 def addEdge():
@@ -288,7 +298,8 @@ def addEdge():
 
 def resetSandG_colors():
     global START_NODE, GOAL_NODES
-    nx.set_node_attributes(G, {START_NODE.name: {'color': "white"}})
+    if (START_NODE != 0):
+        nx.set_node_attributes(G, {START_NODE.name: {'color': "white"}})
     for node in GOAL_NODES:
         nx.set_node_attributes(G, {node.name: {'color': "white"}})
     updateGraph()
@@ -307,9 +318,13 @@ def resetGraph():
     global currNum, START_NODE
     nodes.clear()
     currNum = 0
-    nodeValues.clear
+    nodeValues.clear()
     START_NODE = 0
-    GOAL_NODES.clear
+    GOAL_NODES.clear()
+    adj_list.clear()
+    updateComboBoxes()
+    G.clear()
+    updateGraph()
 
     print("RESET SUCCESSFUL")
 
