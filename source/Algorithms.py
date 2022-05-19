@@ -98,8 +98,8 @@ class Algorithms:
     def dfs(self, source, goal):
         return self.depth_limited(source, goal, sys.maxsize)
 
-    def iterative_deepening(self, source, goal, max_depth):
-        for depth in range(max_depth):
+    def iterative_deepening(self, source, goal):
+        for depth in range(len(nodes)):                         # maximum possible depth is if the nodes are in a line
             self.reset_iterative_deepening()
             self.depth_limited(source, goal, depth)
             visited = self.visited_return.copy()
@@ -196,9 +196,9 @@ class Algorithms:
     			  #if node isn't traversed before, add it to fringe
                   if childNode not in open_list and childNode not in closed_list:
                       open_list.add(childNode)
-                      self.parent[childNode] = [node, childNode[1]] 
+                      self.parent[childNode] = [node, childNode[1]]
                       g[childNode] = g[node] + weight
- 
+
                   else:
                   	#if node is in fringe and reached with smaller g() then update it
                   	if g[childNode] > g[node] + weight:
