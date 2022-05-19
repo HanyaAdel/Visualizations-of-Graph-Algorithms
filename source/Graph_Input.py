@@ -119,6 +119,7 @@ G=nx.Graph()
 path = []
 visited_ID = []  # iterative deepening visited lists
 color_map = []
+edge_colors = []
 i = int(-1)
 ani = None
 
@@ -135,7 +136,7 @@ def draw():
     global color_map
     positions = graphviz_layout(G, prog="dot", root=0)
     nx.draw(G, pos=positions,labels = generate_labels(), with_labels=True, node_color=color_map, edgecolors="black",
-            node_size=2000)
+            node_size=2000,edge_color=edge_colors)
     if (weighted == True):
         nx.draw_networkx_edge_labels(G, positions, edge_labels=nx.get_edge_attributes(G, 'w'), font_size=10,
                                  rotate=False)
@@ -165,14 +166,29 @@ def animate_solution(visited_path = alg.get_visited_path()):
     ani = animation.FuncAnimation(fig, animate, frames=len(path), interval=700, repeat=False)
     updateGraph()
 
+def set_path_edge_colors():
+    global edge_colors
+    temp = alg.get_path()
+    for i in range(0,len(temp)-1):
+        nx.set_edge_attributes(G, {(temp[i], temp[i + 1]): {"color":"yellow"}})
+    edge_colors = [G[u][v]['color'] for u, v in G.edges]
+
+def reset_path_edge_colors():
+    global edge_colors
+    temp = alg.get_path()
+    for i in range(0, len(temp) - 1):
+        nx.set_edge_attributes(G, {(temp[i], temp[i + 1]): {"color": "black"}})
+    edge_colors = [G[u][v]['color'] for u, v in G.edges]
 
 def show_solution_path(solution_path=alg.get_path()):
     global color_map
-    color_map = list(nx.get_node_attributes(G, "color").values())   
+    color_map = list(nx.get_node_attributes(G, "color").values())
+    set_path_edge_colors()
     for node in solution_path:
         color_map[int(node)] = "yellow"
     draw()
     canvas.draw()  # check if you need this
+    reset_path_edge_colors()
 
 
 def show_visited(visited=alg.get_visited()):
@@ -212,9 +228,10 @@ def display_visited():
         show_visited()
 
 def updateGraph():
-    global color_map
+    global color_map, edge_colors
     plt.clf()
     color_map = list(nx.get_node_attributes(G, "color").values())
+    edge_colors = list(nx.get_edge_attributes(G,"color").values())
     draw()
     canvas.draw()
 
@@ -270,7 +287,7 @@ def addEdge():
 
     
     G.add_edge(srcNode.name, destNode.name,
-               w=weight) 
+               w=weight,color = "black")
 
     updateGraph()
 
