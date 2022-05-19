@@ -1,8 +1,7 @@
 import sys
 from tkinter import *
 from tkinter.ttk import Combobox
-from turtle import right
-from Main_Page import directed, weighted
+
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -17,7 +16,8 @@ from Algorithms import Algorithms
 currNum = 0
 
 nodeValues = []
-
+directed = False
+weighted = False
 START_NODE = 0
 GOAL_NODES = []
 
@@ -47,92 +47,53 @@ def printGraph():
             print(node, "-->", edges[0], edges[1])
 
 def run_DFS():
-    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.reset()                             
     alg.dfs(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 
 def run_ID():
-    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.reset()                                
     alg.iterative_deepening(START_NODE, GOAL_NODES, sys.maxsize)
     animate_solution(alg.get_visited_path())
 
 def run_BFS():
-    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.reset()                               
     alg.bfs(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 def run_greedy_best_first_search():
-    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.reset()                                
     alg.greedy_best_first_search(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 def run_A_star():
-    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.reset()                                
     alg.A_star_search(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())    
 
 def run_dijkstra():
-    alg.reset()                                 # consider moving this to the beginning of the algorithm itself Todo
+    alg.reset()                              
     alg.dijkstra(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 
-def openPopup():
-    
+def noSolutionPopup():
+    noSolution = Toplevel(GraphInputPage)
+    noSolution.title('Error')   
 
-
-    def closeWindow():
-        heuristicsPage.destroy()
-        heuristicsPage.update()
-    
-    def reset():
-        for widgets in heuristicsPage.winfo_children():
-            widgets.destroy()
-        putInput(0)
-    
-    def putInput(i):
-        if i >= len(nodes):
-            submitAll = Button( heuristicsPage, text = "Submit All Values", command= closeWindow)
-            clearAll = Button( heuristicsPage, text = "Clear All Values", command= reset)
-
-            submitAll.pack()
-            clearAll.pack()
-
-            return
-        
-        addHeurLabel = Label (heuristicsPage, text = nodes[i].name)
-        HeurInput = Text(heuristicsPage, height = 1, width = 4)
-
-        submitHeuristic = Button( heuristicsPage, text = "Submit Heuristic", 
-        command= lambda: setHeur(HeurInput, submitHeuristic,nodes[i], i) )
-
-        addHeurLabel.pack()
-        HeurInput.pack()
-        submitHeuristic.pack()
-
-
-    def setHeur(heurInput: Text, submitHeuristic:Button, node:Node, i):
-        node.heuristic = int (heurInput.get('1.0', END))
-        heurInput["state"] = DISABLED
-        submitHeuristic["state"] = DISABLED
-        putInput(i+1)
-
-
-    heuristicsPage = Toplevel(GraphInputPage)
-    heuristicsPage.title('Heuristics Input')   
-    putInput(0)
-    GraphInputPage.wait_window(heuristicsPage)
-
+    label4 = Label (noSolution, text = "There's No path")
+    label4.pack(ipadx= 50, ipady=50)
+    GraphInputPage.wait_window(noSolution)
 
 
 def runAlgo():
     global algo
-    alg.START_NODE = START_NODE                # this if for depth limited path calculation Todo
+    alg.START_NODE = START_NODE             
     algo = selectedAlgorithm.get()
     if algo == "Iterative Deepening":
         run_ID()
-    
+
     elif algo == "Depth First Search":
         run_DFS()
     
@@ -143,21 +104,17 @@ def runAlgo():
         run_dijkstra()
 
     elif algo == "Greedy Best First Search":
-        openPopup()
         run_greedy_best_first_search()
 
     elif algo == "A*":
-        openPopup()
         run_A_star()
-    
+
+    if (alg.found == False):
+        noSolutionPopup()
+
     totalLabel['text'] = "Total cost = " + str(alg.get_total_cost())
 
-        
-
 G=nx.Graph()
-
-if (directed):
-    G = nx.DiGraph()
 
 path = []
 visited_ID = []  # iterative deepening visited lists
@@ -173,7 +130,7 @@ def draw():
     if (weighted == True):
         nx.draw_networkx_edge_labels(G, positions, edge_labels=nx.get_edge_attributes(G, 'w'), font_size=10,
                                  rotate=False)
-    # nx.draw_networkx_labels(G,pos=h_positions,labels=nx.get_node_attributes(G,"heuristic"))
+   
 
 
 def animate(frame):
@@ -181,7 +138,7 @@ def animate(frame):
     global G
     global color_map
     global path
-    # G = G.to_undirected()             # consider this for changing the graph from directed to undirected Todo
+   
 
     color_map = list(nx.get_node_attributes(G, "color").values())
     fig.clear()
@@ -195,14 +152,14 @@ def animate_solution(visited_path = alg.get_visited_path()):
     global i
     i = int(-1)
     path = visited_path
-    # nx.draw_networkx(G, pos=positions, with_labels=True)
+ 
     ani = animation.FuncAnimation(fig, animate, frames=len(path), interval=700, repeat=False)
     updateGraph()
 
 
 def show_solution_path(solution_path=alg.get_path()):
     global color_map
-    color_map = list(nx.get_node_attributes(G, "color").values())     # consider making this a reset_color_map func Todo
+    color_map = list(nx.get_node_attributes(G, "color").values())   
     for node in solution_path:
         color_map[int(node)] = "yellow"
     draw()
@@ -257,12 +214,15 @@ def updateGraph():
 def addNode():
     global currNum
     nodeValues.append(currNum)
-    tempNode = Node(currNum, 1)
+    heur = int (HeurInput.get("1.0",END))
+    tempNode = Node(currNum, heur)
     nodes.append(tempNode)
-
+    print(tempNode.heuristic)
     currNum = currNum+1 
 
     updateComboBoxes()
+    HeurInput.delete('1.0', END)
+    HeurInput.insert(END, '0')
     G.add_node(tempNode.name, heuristic=tempNode.heuristic, color="white")
     updateGraph()
 
@@ -301,7 +261,7 @@ def addEdge():
 
     
     G.add_edge(srcNode.name, destNode.name,
-               w=weight)  # w instead of weight to avoid graphvis dot layout from changing edge lengths
+               w=weight) 
 
     updateGraph()
 
@@ -323,6 +283,83 @@ def resetSandG():
     START_NODE = 0
     GOAL_NODES.clear()
 
+
+def showGraphOptionsPopup():
+    def setDirectedOrNot():
+        global directed
+        directed = var1.get()
+        
+
+    def setWeightedOrNot():
+        global weighted
+        weighted = var2.get()
+        
+    
+    def closeWindow():
+        setWeightedOrNot()
+        setDirectedOrNot()
+        resetGraphOptions()
+        
+        graphOptions.destroy()
+        graphOptions.update()
+    
+
+    graphOptions = Toplevel(GraphInputPage)
+    graphOptions.title('New Graph Options')  
+    x = GraphInputPage.winfo_x()
+    y = GraphInputPage.winfo_y()
+    graphOptions.geometry("+%d+%d" % (x + 400, y + 100))
+    
+
+    label4 = Label (graphOptions, text = "Enter the Options for the next Graph")
+    label4.pack(ipadx= 10, ipady=10)
+    
+    DirectedOrNot = Label(graphOptions, text = "Is the graph directed?")
+    DirectedOrNot.pack(ipady=5) 
+
+
+    var1 = BooleanVar(graphOptions)
+    
+    R1 = Radiobutton(graphOptions, text="YES", variable=var1, value=True, command=setDirectedOrNot)
+    R1.pack()
+
+    R2 = Radiobutton(graphOptions, text="NO", variable=var1, value=False, command=setDirectedOrNot)
+    R2.pack()
+
+
+    WeightedOrNot = Label(graphOptions, text = "Is the graph weighted?")
+    WeightedOrNot.pack(ipady=5) 
+
+    var2 = BooleanVar(graphOptions)
+    
+
+    R3 = Radiobutton(graphOptions, text="YES", variable=var2, value=True, command=setWeightedOrNot)
+    R3.pack()
+
+    R4 = Radiobutton(graphOptions, text="NO", variable=var2, value=False, command=setWeightedOrNot)
+    R4.pack()
+
+    button1= Button(graphOptions, text="Graph!", command= closeWindow)
+    button1.pack(pady=10)
+
+    GraphInputPage.wait_window(graphOptions)
+
+
+def resetGraphOptions():
+    global weighted, directed
+
+    if weighted == True:
+        weightFrame.pack(ipady = 5)
+    else:
+        weightFrame.pack_forget()
+    
+    global G
+    if (directed == True):
+        G = nx.DiGraph()
+    else:
+        G = nx.Graph()
+
+    
 def resetGraph():
     global currNum, START_NODE
     nodes.clear()
@@ -335,7 +372,10 @@ def resetGraph():
     G.clear()
     updateGraph()
     totalLabel['text'] = "Total Cost= 0"
-    print("RESET SUCCESSFUL")
+    showGraphOptionsPopup()
+    
+
+
 
 GraphInputPage = Tk()
 GraphInputPage.title('Graph Input')
@@ -349,23 +389,32 @@ canvas.get_tk_widget().pack(side=RIGHT, fill=Y)
 nodesAndEdgesFrame =  Frame(GraphInputPage, width=350)
 nodesAndEdgesFrame.pack( side=LEFT, fill=Y)
 
-##########################################  ADDING NODES #############################################################
+##########################################  ADDING NODES #########################################################
 
-nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=80)
+nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, 
+                width=350, height=95)
 nodesFrame.pack(ipady=7)
 nodesFrame.pack_propagate(0)
 
 addNodesLabel = Label (nodesFrame, text = "Adding Nodes")
 addNodesLabel.pack(ipady=8)
 
+addHeurLabel = Label (nodesFrame, text = "Enter Node Heuristic")
+HeurInput = Text(nodesFrame, height = 1, width = 4)
+HeurInput.insert(END, "0")
+
+addHeurLabel.pack()
+HeurInput.pack()
+
 addNodesBtn= Button(nodesFrame, text="Add a new Node", command= addNode)
 addNodesBtn.pack(ipadx=3, ipady=3)
 
 
-##########################################  ADDING EDGES #############################################################
+##########################################  ADDING EDGES ########################################################
 
 
-edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=130)
+edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, 
+            width=350, height=130)
 edgesFrame.pack(ipady=20)
 edgesFrame.pack_propagate(0)
 
@@ -393,8 +442,7 @@ destDrop['state'] = "readonly"
 destDrop.pack(ipady=2)  
 
 
-if weighted == TRUE:
-    weightFrame.pack(ipady = 5)
+
 
 
 addEdgeBtn = Button(edgesFrame, text = "Add Edge", command = addEdge)
@@ -402,10 +450,11 @@ addEdgeBtn.pack(ipadx=3, ipady=3)
 
 
 
-##########################################  SELECTING START AND GOAL #########################################################
+##########################################  SELECTING START AND GOAL ##########################################
 
 
-startAndGoalFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=110)
+startAndGoalFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1,
+                     width=350, height=110)
 startAndGoalFrame.pack()
 
 
@@ -444,9 +493,10 @@ startAndGoalFrame.pack_propagate(0)
 
 
 
-##########################################  SELECTING ALGORITHM #############################################################
+##########################################  SELECTING ALGORITHM ##############################################
 
-algoFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=70)
+algoFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, 
+                width=350, height=70)
 algoFrame.pack(ipady=10)
 algoFrame.pack_propagate(0)
 
@@ -469,9 +519,10 @@ label3.pack(ipady=3)
 algorithmsDrop.pack()
 testAlgoBtn.pack(side=BOTTOM, ipady=3)
 
-##########################################  SOLUTION ANIMATIONS #############################################################
+##########################################  SOLUTION ANIMATIONS ################################################
 
-solutionsAnimationsFrame = Frame(nodesAndEdgesFrame,  highlightbackground="black", highlightthickness=1, width=350, height=110)
+solutionsAnimationsFrame = Frame(nodesAndEdgesFrame,  highlightbackground="black", highlightthickness=1, 
+                            width=350, height=110)
 solutionsAnimationsFrame.pack(ipady=10)
 solutionsAnimationsFrame.pack_propagate(0)
 
@@ -481,22 +532,12 @@ testAlgo.pack()
 testAlgo = Button(solutionsAnimationsFrame, text="Show Visited", state=NORMAL, command=display_visited)
 testAlgo.pack()
 
-# testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
-# testAlgo.pack()
-
 totalLabel = Label (solutionsAnimationsFrame, text = "Total Cost= 0")
 totalLabel.pack()
 
 resetGraphBtn = Button(solutionsAnimationsFrame, text="RESET GRAPH", fg= "red", state=NORMAL, command=resetGraph)
 resetGraphBtn.pack(ipady=5, ipadx=5, side=BOTTOM)
 
+GraphInputPage.after_idle(showGraphOptionsPopup)
 
 GraphInputPage.mainloop()
-
-# Todo
-# can there be no path from source to destination node (source node is a leaf node in a directed graph)
-# can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
-# there will be a button for only showing the visited nodes for iterative deepening 
-# (this one is different from the one used in the other algorithms)
-# add back button for changing the graph type (directed, undirected, weighted, unweighted)
-
