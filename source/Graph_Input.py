@@ -54,7 +54,7 @@ def run_DFS():
 
 def run_ID():
     alg.reset()                                
-    alg.iterative_deepening(START_NODE, GOAL_NODES, sys.maxsize)
+    alg.iterative_deepening(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 def run_BFS():
@@ -122,11 +122,20 @@ color_map = []
 i = int(-1)
 ani = None
 
+def generate_labels():
+    global nodeValues
+    labels = {}
+    heuristics = nx.get_node_attributes(G,'heuristic')
+    for node in nodeValues:
+        temp = str(node)+"\nh : "+str(heuristics[node])
+        labels[node]=temp
+    return labels
 
 def draw():
     global color_map
     positions = graphviz_layout(G, prog="dot", root=0)
-    nx.draw(G, pos=positions, with_labels=True, node_color=color_map, edgecolors="black")
+    nx.draw(G, pos=positions,labels = generate_labels(), with_labels=True, node_color=color_map, edgecolors="black",
+            node_size=2000)
     if (weighted == True):
         nx.draw_networkx_edge_labels(G, positions, edge_labels=nx.get_edge_attributes(G, 'w'), font_size=10,
                                  rotate=False)
@@ -218,13 +227,13 @@ def addNode():
     tempNode = Node(currNum, heur)
     nodes.append(tempNode)
     print(tempNode.heuristic)
-    currNum = currNum+1 
+    currNum = currNum+1
 
-    updateComboBoxes()
     HeurInput.delete('1.0', END)
     HeurInput.insert(END, '0')
     G.add_node(tempNode.name, heuristic=tempNode.heuristic, color="white")
     updateGraph()
+    updateComboBoxes()
 
 
 def updateComboBoxes():
@@ -237,7 +246,7 @@ def updateComboBoxes():
     startNodeDrop['values'] = nodeValues
     goalNodeDrop['values'] = nodeValues
     weightInput.delete('1.0', END)
-    resetSandG()
+    resetSandG()                    # Todo Consider removing this method call
 
 
 def addEdge():
