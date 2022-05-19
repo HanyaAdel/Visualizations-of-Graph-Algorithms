@@ -22,59 +22,12 @@ GOAL_NODES = []
 
 alg = Algorithms()
 
-def addNode():
-
-    global currNum
-    nodeValues.append(currNum)
-    tempNode = Node(currNum, 1)
-    nodes.append(tempNode)
-    add_node(tempNode.name, tempNode.heuristic)
-
-    currNum = currNum+1 
-
-    updateComboBoxes()
-
-def updateComboBoxes():
-    src.set( "Select Source" )
-
-    dest.set("Select Destination")
-    srcDrop['values'] = nodeValues
-    destDrop['values'] = nodeValues
-
-    startNodeDrop['values'] = nodeValues
-    goalNodeDrop['values'] = nodeValues
-
-    weightInput.delete('1.0', END)
-
-
-
-def addEdge():
-
-    srcNode, destNode = src.get(), dest.get()
-    srcNode = Node.get_node(int(srcNode))
-    destNode = Node.get_node(int(destNode))
-        
-    weight = 0
-
-    if weighted:
-        weight = int (weightInput.get("1.0",END))
-
-    temp = [destNode, weight]
-    adj_list[srcNode].append (temp)
-    add_edge(srcNode.name,destNode.name,weight)
-    if directed == FALSE: 
-        temp = [srcNode, weight]
-        adj_list[destNode].append (temp)
-
-    updateComboBoxes()
-
-
 def submitStartNode():
     global START_NODE
     startNode = start.get()
     START_NODE = Node.get_node(int(startNode))
     nx.set_node_attributes(G,{START_NODE.name:{'color': "cyan"}})
-    update()
+    updateGraph()
 
 
 def submitGoalNode():
@@ -83,7 +36,7 @@ def submitGoalNode():
     tempNode = Node.get_node(int(goalNode))
     GOAL_NODES.append(tempNode)
     nx.set_node_attributes(G, {tempNode.name: {'color': "orange"}})
-    update()
+    updateGraph()
 
 def printGraph():
 
@@ -204,7 +157,8 @@ def draw():
     global color_map
     positions = graphviz_layout(G, prog="dot", root=0)
     nx.draw(G, pos=positions, with_labels=True, node_color=color_map, edgecolors="black")
-    nx.draw_networkx_edge_labels(G, positions, edge_labels=nx.get_edge_attributes(G, 'w'), font_size=10,
+    if (weighted == True):
+        nx.draw_networkx_edge_labels(G, positions, edge_labels=nx.get_edge_attributes(G, 'w'), font_size=10,
                                  rotate=False)
     # nx.draw_networkx_labels(G,pos=h_positions,labels=nx.get_node_attributes(G,"heuristic"))
 
@@ -230,7 +184,7 @@ def animate_solution(visited_path = alg.get_visited_path()):
     path = visited_path
     # nx.draw_networkx(G, pos=positions, with_labels=True)
     ani = animation.FuncAnimation(fig, animate, frames=len(path), interval=700, repeat=False)
-    update()
+    updateGraph()
 
 
 def show_solution_path(solution_path=alg.get_path()):
@@ -269,26 +223,69 @@ def show_visited_ID(visited=alg.get_visited_ID()):  # show visited for iterative
     visited_ID = visited
     i = int(-1)
     ani = animation.FuncAnimation(fig, animate_visited, frames=len(visited), interval=700, repeat=False)
-    update()
+    updateGraph()
 
 
-def add_node(node_name, heuristic):
-    G.add_node(node_name, heuristic=heuristic, color="white")
-    update()
-
-
-def add_edge(source, destination, weight):
-    G.add_edge(source, destination,
-               w=weight)  # w instead of weight to avoid graphvis dot layout from changing edge lengths
-    update()
-
-
-def update():
+def updateGraph():
     global color_map
     plt.clf()
     color_map = list(nx.get_node_attributes(G, "color").values())
     draw()
     canvas.draw()
+
+
+
+def addNode():
+    global currNum
+    nodeValues.append(currNum)
+    tempNode = Node(currNum, 1)
+    nodes.append(tempNode)
+
+    currNum = currNum+1 
+
+    updateComboBoxes()
+    G.add_node(tempNode.name, heuristic=tempNode.heuristic, color="white")
+    updateGraph()
+
+
+def updateComboBoxes():
+    src.set( "Select Source" )
+
+    dest.set("Select Destination")
+    srcDrop['values'] = nodeValues
+    destDrop['values'] = nodeValues
+
+    startNodeDrop['values'] = nodeValues
+    goalNodeDrop['values'] = nodeValues
+
+    weightInput.delete('1.0', END)
+
+
+def addEdge():
+    srcNode, destNode = src.get(), dest.get()
+    srcNode = Node.get_node(int(srcNode))
+    destNode = Node.get_node(int(destNode))
+        
+    weight = 0
+
+    if weighted:
+        weight = int (weightInput.get("1.0",END))
+
+    temp = [destNode, weight]
+    adj_list[srcNode].append (temp)
+
+    if directed == FALSE: 
+        temp = [srcNode, weight]
+        adj_list[destNode].append (temp)
+
+    updateComboBoxes()
+
+    
+    G.add_edge(srcNode.name, destNode.name,
+               w=weight)  # w instead of weight to avoid graphvis dot layout from changing edge lengths
+
+    updateGraph()
+
 
 
 def resetSandG():
@@ -300,6 +297,9 @@ def resetSandG():
     START_NODE = 0
     GOAL_NODES.clear()
 
+def resetGraph():
+    GraphInputPage.destroy()
+    import Main_Page
 
 GraphInputPage = Tk()
 GraphInputPage.title('Graph Input')
@@ -366,7 +366,7 @@ addEdgeBtn.pack(ipadx=5, ipady=5)
 
 
 
-##########################################  SELECTING START AND GOAL #############################################################
+##########################################  SELECTING START AND GOAL #########################################################
 
 
 startAndGoalFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=100)
@@ -444,15 +444,18 @@ testAlgo.pack()
 testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
 testAlgo.pack()
 
+resetGraphBtn = Button(solutionsAnimationsFrame, text="RESET GRAPH", fg= "red", state=NORMAL, command=resetGraph)
+testAlgo.pack()
+resetGraphBtn.pack(ipady=6, ipadx=6)
 
-##########################################  HEURISTICS WINDOW #############################################################
 
 GraphInputPage.mainloop()
 
 # Todo
 # can there be no path from source to destination node (source node is a leaf node in a directed graph)
 # can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
-# there will be a button for only showing the visited nodes for iterative deepening (this one is different from the one used in the other algorithms)
+# there will be a button for only showing the visited nodes for iterative deepening 
+# (this one is different from the one used in the other algorithms)
 # add reset graph button
 # add back button for changing the graph type (directed, undirected, weighted, unweighted)
 
