@@ -468,9 +468,5 @@ GraphInputPage.mainloop()
 # can there be isolated parts in the graph (node with no edges connected to it, or an isolated tree)?
 # there will be a button for only showing the visited nodes for iterative deepening 
 # (this one is different from the one used in the other algorithms)
-# add reset graph button
 # add back button for changing the graph type (directed, undirected, weighted, unweighted)
-
-# new Todo
-# clearing start and goal in graph 
 
