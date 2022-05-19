@@ -22,6 +22,7 @@ START_NODE = 0
 GOAL_NODES = []
 
 alg = Algorithms()
+algo = ""           #algorithm being used
 
 def submitStartNode():
     global START_NODE
@@ -126,6 +127,7 @@ def openPopup():
 
 
 def runAlgo():
+    global algo
     alg.START_NODE = START_NODE                # this if for depth limited path calculation Todo
     algo = selectedAlgorithm.get()
     if algo == "Iterative Deepening":
@@ -239,6 +241,12 @@ def show_visited_ID(visited=alg.get_visited_ID()):  # show visited for iterative
     ani = animation.FuncAnimation(fig, animate_visited, frames=len(visited), interval=700, repeat=False)
     updateGraph()
 
+def display_visited():
+    global algo
+    if(algo=="Iterative Deepening"):
+        show_visited_ID()
+    else:
+        show_visited()
 
 def updateGraph():
     global color_map
@@ -474,11 +482,11 @@ solutionsAnimationsFrame.pack_propagate(0)
 testAlgo = Button(solutionsAnimationsFrame, text="Show Path", state=NORMAL, command=show_solution_path)
 testAlgo.pack()
 
-testAlgo = Button(solutionsAnimationsFrame, text="Show Visited", state=NORMAL, command=show_visited)
+testAlgo = Button(solutionsAnimationsFrame, text="Show Visited", state=NORMAL, command=display_visited)
 testAlgo.pack()
 
-testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
-testAlgo.pack()
+# testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
+# testAlgo.pack()
 
 totalLabel = Label (solutionsAnimationsFrame, text = "Total Cost= 0")
 totalLabel.pack()
