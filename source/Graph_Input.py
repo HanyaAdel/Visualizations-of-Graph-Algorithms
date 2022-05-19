@@ -120,6 +120,36 @@ def run_dijkstra():
     animate_solution(alg.get_visited_path())
 
 
+def openPopup():
+    
+    heuristicsPage = Toplevel(GraphInputPage)
+    heuristicsPage.title('Heuristics Input')   
+    putInput(0)
+
+    def putInput(i):
+        if i >= len(nodes):
+
+            heuristicsPage.destroy()
+            heuristicsPage.update()
+            return
+        
+        addHeurLabel = Label (heuristicsPage, text = nodes[i].name)
+        HeurInput = Text(heuristicsPage, height = 1, width = 4)
+
+        submitHeuristic = Button( heuristicsPage, text = "Submit Heuristic", 
+        command= lambda: setHeur(HeurInput, nodes[i], i) )
+
+        addHeurLabel.pack()
+        HeurInput.pack()
+        submitHeuristic.pack()
+
+    def setHeur(heurInput: Text, node:Node):
+        node.heuristic = int (heurInput.get('1.0', END))
+
+    GraphInputPage.wait_window(heuristicsPage)
+
+
+
 def runAlgo():
     alg.START_NODE = START_NODE                # this if for depth limited path calculation Todo
     algo = selectedAlgorithm.get()
@@ -136,10 +166,11 @@ def runAlgo():
     elif algo == "Depth Limited":
         print ("dL")
     elif algo == "Greedy Best First Search":
-        print("greedy")
+        openPopup()
         run_greedy_best_first_search()
+
     elif algo == "A*":
-        print ("a*")
+        print("a*")
 
 G=nx.Graph()
 
