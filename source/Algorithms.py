@@ -164,25 +164,26 @@ class Algorithms:
                     self.visited_return.append(childNode[0].name)
                     self.parent[childNode[0]] = [topNode, childNode[1]]
                     pq.put((childNode[0].heuristic, childNode[0].name))
-        
-    def A_star_search(self, source: Node, goalNodes = []):
-        open_list = set([source])
+
+    def A_star_search(self, source: Node, goalNodes=[]):
+        open_list = set([source.name])
         closed_list = set([])
-        
-        g = []
+        g = {}
+
         g[source] = 0
-        
+
         while len(open_list) > 0:
             node = None
 
-    		#find node with smallest value of f()
+            # find node with smallest value of f()
             for n in open_list:
-                if node == None or g[n] + n.heuristic < g[node] + node.heuristic:
-                    node = n
- 
-    		#if node == None:
-              #  print('Path does not exist!')
-                #return None
+                m = Node.get_node(n)
+                if node == None or g[m] + m.heuristic < g[node] + node.heuristic:
+                    node = m
+
+            # if node == None:
+            #  print('Path does not exist!')
+            # return None
             self.visited_flag[node] = True
             self.visited_return.append(node.name)
             self.visited_path.append(node.name)
@@ -190,30 +191,30 @@ class Algorithms:
             if (self.isGoalNode(node, goalNodes)):
                 self.generate_solution_path_and_calculate_total_cost(source, node)
                 return
- 
-    		#expand node
-            for (childNode, weight) in self.graph[node]:
-    			  #if node isn't traversed before, add it to fringe
-                  if childNode not in open_list and childNode not in closed_list:
-                      open_list.add(childNode)
-                      self.parent[childNode] = [node, childNode[1]]
-                      g[childNode] = g[node] + weight
 
-                  else:
-                  	#if node is in fringe and reached with smaller g() then update it
-                  	if g[childNode] > g[node] + weight:
-                           g[childNode] = g[node] + weight
-                           self.parent[childNode] = [node, childNode[1]]
-                           
-					        #if node was in closed list, remove it and add to open list to be
-					        #traversed with new g()
-                           if childNode in closed_list:
-                            closed_list.remove(childNode)
-                            open_list.add(childNode)
+            # expand node
+            for childNode in adj_list[node]:
+                # if node isn't traversed before, add it to fringe
+                if childNode[0].name not in open_list and childNode[0].name not in closed_list:
+                    open_list.add(childNode[0].name)
+                    self.parent[childNode[0]] = [node, childNode[1]]
+                    g[childNode[0]] = g[node] + childNode[1]
 
-            #finished expanding node and adding it to closed list                
-            open_list.remove(node)
-            closed_list.add(node)
+                else:
+                    # if node is in fringe and reached with smaller g() then update it
+                    if g[childNode[0]] > g[node] + childNode[1]:
+                        g[childNode[0]] = g[node] + childNode[1]
+                        self.parent[childNode[0]] = [node, childNode[1]]
+
+                        # if node was in closed list, remove it and add to open list to be
+                        # traversed with new g()
+                        if childNode[0].name in closed_list:
+                            closed_list.remove(childNode[0].name)
+                            open_list.add(childNode[0].name)
+
+            # finished expanding node and adding it to closed list
+            open_list.remove(node.name)
+            closed_list.add(node.name)
     
     def dijkstra(self, source: Node, goalNodes= []):
     
