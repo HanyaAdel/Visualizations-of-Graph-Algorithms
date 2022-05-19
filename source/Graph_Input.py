@@ -1,6 +1,7 @@
 import sys
 from tkinter import *
 from tkinter.ttk import Combobox
+from turtle import right
 from Main_Page import directed, weighted
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -149,6 +150,9 @@ def runAlgo():
     elif algo == "A*":
         openPopup()
         run_A_star()
+    
+    totalLabel['text'] = "Total cost = " + str(alg.get_total_cost())
+
         
 
 G=nx.Graph()
@@ -342,7 +346,7 @@ nodesAndEdgesFrame.pack( side=LEFT, fill=Y)
 
 ##########################################  ADDING NODES #############################################################
 
-nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=90)
+nodesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=80)
 nodesFrame.pack(ipady=7)
 nodesFrame.pack_propagate(0)
 
@@ -350,13 +354,13 @@ addNodesLabel = Label (nodesFrame, text = "Adding Nodes")
 addNodesLabel.pack(ipady=8)
 
 addNodesBtn= Button(nodesFrame, text="Add a new Node", command= addNode)
-addNodesBtn.pack(ipadx=5, ipady=5)
+addNodesBtn.pack(ipadx=3, ipady=3)
 
 
 ##########################################  ADDING EDGES #############################################################
 
 
-edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=150)
+edgesFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=130)
 edgesFrame.pack(ipady=20)
 edgesFrame.pack_propagate(0)
 
@@ -377,28 +381,32 @@ weightInput.pack(side=LEFT)
 
 srcDrop = Combobox(edgesFrame, textvariable = src, values= nodeValues)
 srcDrop['state'] = "readonly"
-srcDrop.pack(ipady=5) 
+srcDrop.pack(ipady=2) 
 
 destDrop = Combobox(edgesFrame, textvariable = dest, values= nodeValues)
 destDrop['state'] = "readonly"
-destDrop.pack(ipady=5)  
+destDrop.pack(ipady=2)  
 
 
 if weighted == TRUE:
-    weightFrame.pack(ipady = 7)
+    weightFrame.pack(ipady = 5)
 
 
 addEdgeBtn = Button(edgesFrame, text = "Add Edge", command = addEdge)
-addEdgeBtn.pack(ipadx=5, ipady=5)
+addEdgeBtn.pack(ipadx=3, ipady=3)
 
 
 
 ##########################################  SELECTING START AND GOAL #########################################################
 
 
-startAndGoalFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=100)
+startAndGoalFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=110)
+startAndGoalFrame.pack()
+
 
 startFrame = Frame(startAndGoalFrame, width=350)
+startFrame.pack()
+
 startNodeLabel = Label(startFrame, text = "Start Node: ")
 start = StringVar()
 start.set("Select Start Node")
@@ -407,10 +415,12 @@ startNodeDrop['state'] = 'readonly'
 startNodeLabel.pack(side=LEFT, ipadx=5)
 startNodeDrop.pack(side=LEFT)
 submitStartNodeBtn = Button(startFrame, text="Submit Start Node", state=NORMAL, command=submitStartNode)
-submitStartNodeBtn.pack(ipady=5)
+submitStartNodeBtn.pack(ipady=3, side=RIGHT)
 
 
 goalFrame = Frame(startAndGoalFrame, width=350)
+goalFrame.pack()
+
 goalNodeLabel = Label(goalFrame, text = "Goal Node(s): ")
 goal = StringVar()
 goal.set("Select Goal Node")
@@ -419,21 +429,19 @@ goalNodeDrop['state'] = 'readonly'
 goalNodeLabel.pack(side=LEFT, ipadx=5)
 goalNodeDrop.pack(side=LEFT)
 submitStartNodeBtn = Button(goalFrame, text="Submit Goal Node", state=NORMAL, command=submitGoalNode)
-submitStartNodeBtn.pack(ipady=5)
+submitStartNodeBtn.pack(ipady=3, side=RIGHT)
 
 
 resetStartAndGoal = Button(startAndGoalFrame, text = "Reset Start and Goal Nodes", command= resetSandG)
-startFrame.pack()
-goalFrame.pack()
-resetStartAndGoal.pack()
-startAndGoalFrame.pack()
+resetStartAndGoal.pack(side=BOTTOM, ipady=3)
+
 startAndGoalFrame.pack_propagate(0)
 
 
 
 ##########################################  SELECTING ALGORITHM #############################################################
 
-algoFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=100)
+algoFrame = Frame(nodesAndEdgesFrame, highlightbackground="black", highlightthickness=1, width=350, height=70)
 algoFrame.pack(ipady=10)
 algoFrame.pack_propagate(0)
 
@@ -455,12 +463,13 @@ testAlgoBtn = Button(algoFrame, text="Test Algorithm", state=NORMAL, command=run
 
 label3.pack(ipady=3)
 algorithmsDrop.pack()
-testAlgoBtn.pack()
+testAlgoBtn.pack(side=BOTTOM, ipady=3)
 
 ##########################################  SOLUTION ANIMATIONS #############################################################
 
-solutionsAnimationsFrame = Frame(nodesAndEdgesFrame, width=350, height=100)
+solutionsAnimationsFrame = Frame(nodesAndEdgesFrame,  highlightbackground="black", highlightthickness=1, width=350, height=110)
 solutionsAnimationsFrame.pack(ipady=10)
+solutionsAnimationsFrame.pack_propagate(0)
 
 testAlgo = Button(solutionsAnimationsFrame, text="Show Path", state=NORMAL, command=show_solution_path)
 testAlgo.pack()
@@ -471,9 +480,11 @@ testAlgo.pack()
 testAlgo = Button(solutionsAnimationsFrame, text="Show Visited ID", state=NORMAL, command=show_visited_ID)
 testAlgo.pack()
 
+totalLabel = Label (solutionsAnimationsFrame, text = "Total Cost= 0")
+totalLabel.pack()
+
 resetGraphBtn = Button(solutionsAnimationsFrame, text="RESET GRAPH", fg= "red", state=NORMAL, command=resetGraph)
-testAlgo.pack()
-resetGraphBtn.pack(ipady=6, ipadx=6)
+resetGraphBtn.pack(ipady=5, ipadx=5, side=BOTTOM)
 
 
 GraphInputPage.mainloop()
