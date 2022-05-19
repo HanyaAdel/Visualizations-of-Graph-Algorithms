@@ -19,6 +19,7 @@ def setWeightedOrNot():
 def gotoGraphInput():
     root.destroy()
     import Graph_Input
+    
 
 title = tk.Label(root, text = "Simulate Graph Search Algorithms!")
 title.config(font=("Courier", 23))

@@ -298,8 +298,14 @@ def resetSandG():
     GOAL_NODES.clear()
 
 def resetGraph():
-    GraphInputPage.destroy()
-    import Main_Page
+    global currNum, START_NODE
+    nodes.clear()
+    currNum = 0
+    nodeValues.clear
+    START_NODE = 0
+    GOAL_NODES.clear
+
+    print("RESET SUCCESSFUL")
 
 GraphInputPage = Tk()
 GraphInputPage.title('Graph Input')
@@ -395,7 +401,7 @@ submitStartNodeBtn = Button(goalFrame, text="Submit Goal Node", state=NORMAL, co
 submitStartNodeBtn.pack(ipady=5)
 
 
-resetStartAndGoal = Button(startAndGoalFrame, text = "Reset Start and Goal Nodes", command= resetSandG())
+resetStartAndGoal = Button(startAndGoalFrame, text = "Reset Start and Goal Nodes", command= resetSandG)
 startFrame.pack()
 goalFrame.pack()
 resetStartAndGoal.pack()
