@@ -286,7 +286,12 @@ def addEdge():
 
     updateGraph()
 
-
+def resetSandG_colors():
+    global START_NODE, GOAL_NODES
+    nx.set_node_attributes(G, {START_NODE.name: {'color': "white"}})
+    for node in GOAL_NODES:
+        nx.set_node_attributes(G, {node.name: {'color': "white"}})
+    updateGraph()
 
 def resetSandG():
     start.set( "Select Start Node" )
@@ -294,6 +299,7 @@ def resetSandG():
     goal.set("Select Goal Node")
 
     global START_NODE, GOAL_NODES
+    resetSandG_colors()
     START_NODE = 0
     GOAL_NODES.clear()
 
