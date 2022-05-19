@@ -141,10 +141,7 @@ def runAlgo():
     
     elif algo == "Dijkstra":
         run_dijkstra()
-    
-    elif algo == "Depth Limited":
-        print ("dL")
-    
+
     elif algo == "Greedy Best First Search":
         openPopup()
         run_greedy_best_first_search()
@@ -337,7 +334,7 @@ def resetGraph():
     updateComboBoxes()
     G.clear()
     updateGraph()
-
+    totalLabel['text'] = "Total Cost= 0"
     print("RESET SUCCESSFUL")
 
 GraphInputPage = Tk()
@@ -461,7 +458,6 @@ algorithmsDrop = Combobox(algoFrame, textvariable = selectedAlgorithm, values= [
     "Depth First Search",
     "Breadth First Search",
     "Dijkstra",
-    "Depth Limited",
     "Greedy Best First Search",
     "A*"
     ])
