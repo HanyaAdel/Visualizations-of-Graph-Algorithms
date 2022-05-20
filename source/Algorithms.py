@@ -157,14 +157,17 @@ class Algorithms:
             topNode = Node.get_node(pq.get()[1])
             self.visited_path.append(topNode.name)
 
+            if self.visited_flag[topNode] == False:
+                self.visited_flag[topNode] = True
+                self.visited_return.append(topNode.name)
+
             if self.isGoalNode(topNode, goalNodes):
                 self.generate_solution_path_and_calculate_total_cost(source, topNode)
                 return
     
             for childNode in adj_list[topNode]:
                 if self.visited_flag[childNode[0]] == False:
-                    self.visited_flag[childNode[0]] = True
-                    self.visited_return.append(childNode[0].name)
+
                     self.parent[childNode[0]] = [topNode, childNode[1]]
                     pq.put((childNode[0].heuristic, childNode[0].name))
 
