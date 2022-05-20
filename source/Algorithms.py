@@ -14,7 +14,6 @@ class Algorithms:
     visited = {}            # visited list to prevent infinite loops
     visited_path = []       # list to be used for illustrating the algorithm path on the graph
     path = []
-    queue = []              #queue for bfs function
     parent = {}             #to generate solution path 
     totalCost = 0           #returns total cost from source to destination
 
@@ -22,8 +21,10 @@ class Algorithms:
         self.reset()
 
     def reset(self):
+        self.totalCost = 0; 
         self.clear_visited_return()
         self.reset_iterative_deepening()
+        self.reset_parent.clear()
         self.visited_path.clear()
         self.visited_return_ID.clear()
 
@@ -121,14 +122,18 @@ class Algorithms:
         return
 
     def bfs(self, source: Node, goalNodes = []):
-        self.queue.append(source)
+        queue = []              #queue for bfs function
+        queue.append(source)
         self.visited_flag[source] = True
         self.visited_return.append(source.name)
         
-        while self.queue:          # Creating loop to visit each node
-            frontNode = self.queue.pop(0) 
+        while queue:          # Creating loop to visit each node
+            frontNode = queue.pop(0) 
             self.visited_path.append(frontNode.name)
             
+            if not self.visited_flag[frontNode]:
+                self.visited_flag[frontNode] = True
+                self.visited_return.append(frontNode.name)
 
             if self.isGoalNode(frontNode, goalNodes):
                 self.generate_solution_path_and_calculate_total_cost(source, frontNode)
@@ -136,10 +141,8 @@ class Algorithms:
             
             for child in adj_list[frontNode]:
                 if not self.visited_flag[child[0]]:
-                    self.visited_flag[child[0]] = True
-                    self.visited_return.append(child[0].name)
                     self.parent[child[0]] = [frontNode, child[1]]
-                    self.queue.append(child[0])
+                    queue.append(child[0])
 
 
     def greedy_best_first_search(self, source: Node, goalNodes = []):
