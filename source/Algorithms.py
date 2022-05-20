@@ -24,7 +24,7 @@ class Algorithms:
         self.totalCost = 0; 
         self.clear_visited_return()
         self.reset_iterative_deepening()
-        self.reset_parent.clear()
+        self.parent.clear()
         self.visited_path.clear()
         self.visited_return_ID.clear()
 
