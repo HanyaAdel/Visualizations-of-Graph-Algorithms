@@ -1,5 +1,7 @@
+import os
 import tkinter as tk
 from PIL import ImageTk, Image
+from resourcepath import resource_path
 
 root = tk.Tk()
 root.geometry('700x550')
@@ -16,7 +18,7 @@ title.config(font=("Courier", 23), bg='white')
 title.pack(ipadx= 10,  ipady= 10) 
 
 
-img = ImageTk.PhotoImage(Image.open("source\image.png"))
+img = ImageTk.PhotoImage(Image.open(resource_path("image.png")))
 label = tk.Label(root, image = img)
 label.config(bg='white')
 label.pack()

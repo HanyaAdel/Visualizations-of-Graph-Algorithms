@@ -12,6 +12,7 @@ from networkx.drawing.nx_pydot import graphviz_layout
 
 from Graph import Node, nodes,adj_list
 from Algorithms import Algorithms
+from resourcepath import resource_path
 
 currNum = 0
 
@@ -134,7 +135,7 @@ def generate_labels():
 
 def draw():
     global color_map
-    positions = graphviz_layout(G, prog="dot", root=0)
+    positions = graphviz_layout(G, prog=resource_path("dot.exe"), root=0)
     nx.draw(G, pos=positions,labels = generate_labels(), with_labels=True, node_color=color_map, edgecolors="black",
             node_size=2000,edge_color=edge_colors)
     if (weighted == True):
@@ -243,7 +244,7 @@ def addNode():
     heur = int (HeurInput.get("1.0",END))
     tempNode = Node(currNum, heur)
     nodes.append(tempNode)
-    print(tempNode.heuristic)
+    # print(tempNode.heuristic)
     currNum = currNum+1
 
     HeurInput.delete('1.0', END)
