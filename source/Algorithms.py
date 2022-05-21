@@ -121,6 +121,19 @@ class Algorithms:
        
         return
 
+
+    def calculate_total_cost (self, source:Node, goal:Node):
+        node = [goal, 0]
+        self.path.append(node[0].name)
+       
+        while node[0] != source:
+            node = self.parent[node[0]]
+            self.path.append(node[0].name)
+            self.totalCost+= node[1]
+        self.path.reverse()
+       
+        return
+
     def bfs(self, source: Node, goalNodes = []):
         queue = []              #queue for bfs function
         queue.append(source)
@@ -130,10 +143,8 @@ class Algorithms:
         while queue:          # Creating loop to visit each node
             frontNode = queue.pop(0) 
             self.visited_path.append(frontNode.name)
-            
-            if not self.visited_flag[frontNode]:
-                self.visited_flag[frontNode] = True
-                self.visited_return.append(frontNode.name)
+
+            self.visited_return.append(frontNode.name)
 
             if self.isGoalNode(frontNode, goalNodes):
                 self.generate_solution_path_and_calculate_total_cost(source, frontNode)
@@ -141,6 +152,7 @@ class Algorithms:
             
             for child in adj_list[frontNode]:
                 if not self.visited_flag[child[0]]:
+                    self.visited_flag[child[0]] = True
                     self.parent[child[0]] = [frontNode, child[1]]
                     queue.append(child[0])
 
@@ -157,19 +169,20 @@ class Algorithms:
             topNode = Node.get_node(pq.get()[1])
             self.visited_path.append(topNode.name)
 
+
             if self.visited_flag[topNode] == False:
                 self.visited_flag[topNode] = True
                 self.visited_return.append(topNode.name)
-
+            
             if self.isGoalNode(topNode, goalNodes):
                 self.generate_solution_path_and_calculate_total_cost(source, topNode)
                 return
     
             for childNode in adj_list[topNode]:
                 if self.visited_flag[childNode[0]] == False:
-
                     self.parent[childNode[0]] = [topNode, childNode[1]]
                     pq.put((childNode[0].heuristic, childNode[0].name))
+
 
     def A_star_search(self, source: Node, goalNodes=[]):
         open_list = set([source.name])
