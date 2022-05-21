@@ -72,9 +72,9 @@ def run_A_star():
     alg.A_star_search(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())    
 
-def run_dijkstra():
+def run_uniform_cost():
     alg.reset()                              
-    alg.dijkstra(START_NODE, GOAL_NODES)
+    alg.uniform_cost(START_NODE, GOAL_NODES)
     animate_solution(alg.get_visited_path())
 
 
@@ -100,8 +100,8 @@ def runAlgo():
     elif algo == "Breadth First Search":
         run_BFS()
     
-    elif algo == "Dijkstra":
-        run_dijkstra()
+    elif algo == "Uniform Cost":
+        run_uniform_cost()
 
     elif algo == "Greedy Best First Search":
         run_greedy_best_first_search()
@@ -533,7 +533,7 @@ algorithmsDrop = Combobox(algoFrame, textvariable = selectedAlgorithm, values= [
     "Iterative Deepening", 
     "Depth First Search",
     "Breadth First Search",
-    "Dijkstra",
+    "Uniform Cost",
     "Greedy Best First Search",
     "A*"
     ])

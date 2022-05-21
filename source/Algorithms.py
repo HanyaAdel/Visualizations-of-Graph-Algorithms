@@ -222,7 +222,7 @@ class Algorithms:
             open_list.remove(node.name)
             closed_list.add(node.name)
     
-    def dijkstra(self, source: Node, goalNodes= []):
+    def uniform_cost(self, source: Node, goalNodes= []):
     
         dist = {}
         for node in nodes:
