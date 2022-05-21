@@ -184,8 +184,8 @@ def show_solution_path(solution_path=alg.get_path()):
     global color_map
     color_map = list(nx.get_node_attributes(G, "color").values())
     set_path_edge_colors()
-    for node in solution_path:
-        color_map[int(node)] = "yellow"
+    for i in range(1,len(solution_path)-1):
+        color_map[int(solution_path[i])] = "yellow"
     draw()
     canvas.draw()  # check if you need this
     reset_path_edge_colors()
