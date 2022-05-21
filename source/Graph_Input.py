@@ -263,7 +263,7 @@ def updateComboBoxes():
     startNodeDrop['values'] = nodeValues
     goalNodeDrop['values'] = nodeValues
     weightInput.delete('1.0', END)
-    resetSandG()                    # Todo Consider removing this method call
+    
 
 
 def addEdge():
@@ -399,6 +399,7 @@ def resetGraph():
     updateGraph()
     totalLabel['text'] = "Total Cost= 0"
     showGraphOptionsPopup()
+    resetSandG()                   
     
 
 
