@@ -203,9 +203,10 @@ class Algorithms:
             # if node == None:
             #  print('Path does not exist!')
             # return None
+            self.visited_path.append(node.name)
             self.visited_flag[node] = True
             self.visited_return.append(node.name)
-            self.visited_path.append(node.name)
+            
 
             if (self.isGoalNode(node, goalNodes)):
                 self.generate_solution_path_and_calculate_total_cost(source, node)
